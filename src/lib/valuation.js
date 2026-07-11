@@ -1,0 +1,64 @@
+import { solveTargetRoe } from './rim'
+import { compsImpliedPrice } from './comps'
+
+export const VERDICT_THRESHOLD = 0.15
+
+export function verdictFromUpside(upside) {
+  if (upside == null) return null
+  if (upside > VERDICT_THRESHOLD) return 'Buy'
+  if (upside < -VERDICT_THRESHOLD) return 'Sell'
+  return 'Hold'
+}
+
+function mean(values) {
+  const clean = values.filter((v) => typeof v === 'number' && Number.isFinite(v))
+  if (!clean.length) return null
+  return clean.reduce((a, b) => a + b, 0) / clean.length
+}
+
+function median(values) {
+  const clean = values.filter((v) => typeof v === 'number' && Number.isFinite(v)).sort((a, b) => a - b)
+  if (!clean.length) return null
+  const mid = Math.floor(clean.length / 2)
+  return clean.length % 2 === 0 ? (clean[mid - 1] + clean[mid]) / 2 : clean[mid]
+}
+
+/**
+ * Aggregates the three implied-price sources (RIM terminal, comps median,
+ * analyst consensus) into the Summary Dashboard verdict.
+ */
+export function buildValuationSummary({ rimInputs, comps, analystViews, currentPrice }) {
+  const solved = solveTargetRoe(rimInputs)
+  const rimResult = solved.result
+  const rimTerminalPrice = rimResult.impliedPrice[rimResult.impliedPrice.length - 1]
+
+  const compsPrice = compsImpliedPrice(comps.peers, rimInputs.fy1Eps)
+
+  const analystMean = analystViews?.targetMean ?? null
+  const analystMedian = analystViews?.targetMedian ?? null
+  const analystPrice = mean([analystMean, analystMedian].filter((v) => v != null)) ?? analystMean ?? analystMedian
+
+  const sources = [
+    { label: 'RIM (terminal)', price: rimTerminalPrice },
+    { label: 'Comps (peer median)', price: compsPrice },
+    { label: 'Analyst consensus', price: analystPrice },
+  ]
+
+  const validPrices = sources.map((s) => s.price).filter((v) => typeof v === 'number' && Number.isFinite(v))
+  const meanFairValue = mean(validPrices)
+  const medianFairValue = median(validPrices)
+
+  const upside = meanFairValue != null && currentPrice ? meanFairValue / currentPrice - 1 : null
+  const verdict = verdictFromUpside(upside)
+
+  return {
+    rim: { solved, result: rimResult, terminalPrice: rimTerminalPrice },
+    compsPrice,
+    analystPrice,
+    sources,
+    meanFairValue,
+    medianFairValue,
+    upside,
+    verdict,
+  }
+}
