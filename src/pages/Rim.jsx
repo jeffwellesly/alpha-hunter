@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useCompanyData } from '../hooks/useCompanyData'
 import { runRim, solveTargetRoe, horizonTableRows, TERMINAL_EPS_GROWTH_TARGET } from '../lib/rim'
 import { fmtPrice, fmtPct, fmtMultiple, upsideClass } from '../lib/format'
-import SourceBadge from '../components/ui/SourceBadge'
+import InfoBadge from '../components/ui/InfoBadge'
 
 const FIELD_DEFS = [
   { key: 'fy1Eps', label: 'FY1 EPS (Normalized)', step: 0.01, source: 'Claude web search (consensus)' },
@@ -94,7 +94,7 @@ export default function Rim() {
 
             <div>
               <div className="label" style={{ marginBottom: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>Target ROE (equilibrium)</span>
+                <span>Target ROE (equilibrium)<InfoBadge explainKey="targetRoe" /></span>
                 <button
                   className="btn"
                   style={{ padding: '2px 8px', fontSize: 11 }}
@@ -139,10 +139,10 @@ export default function Rim() {
                 <thead>
                   <tr>
                     <th>Year</th>
-                    <th>Cum P/B</th>
-                    <th>Implied Price</th>
-                    <th>Total P/B</th>
-                    <th>Upside vs. {fmtPrice(data.currentPrice)}</th>
+                    <th>Cum P/B<InfoBadge explainKey="cumPB" /></th>
+                    <th>Implied Price<InfoBadge explainKey="impliedPrice" /></th>
+                    <th>Total P/B<InfoBadge explainKey="totalPB" /></th>
+                    <th>Upside vs. {fmtPrice(data.currentPrice)}<InfoBadge explainKey="upside" /></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -194,7 +194,7 @@ function EditableField({ def, value, overridden, onChange, onReset, sourceInfo }
   return (
     <div>
       <div className="label" style={{ marginBottom: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span>{def.label}<SourceBadge info={sourceInfo} /></span>
+        <span>{def.label}<InfoBadge explainKey={def.key} source={sourceInfo} /></span>
         {overridden && (
           <button className="btn" style={{ padding: '2px 8px', fontSize: 11 }} onClick={onReset}>
             Reset

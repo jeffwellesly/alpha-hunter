@@ -97,9 +97,10 @@ export async function runFullAnalysis({ ticker, peerTickers, anthropicKey, model
     // than wrapping every value as {value, source, ...} - that would mean
     // threading a new shape through rim.js/comps.js/dupont.js/scf.js
     // (frozen, untouched) just to unwrap it again for math. UI-only
-    // consumers (SourceBadge) key into this by the same field names used
-    // above. Demo data has no equivalent, so badges simply don't render
-    // there - see spec Section 6.
+    // consumers (InfoBadge) key into this by the same field names used
+    // above for the "source" half of the badge; the "how it's calculated"
+    // half comes from lib/explanations.js instead, which works in demo mode
+    // too since it's a fixed formula description, not researched data.
     sources: {
       bvps: { asOfDate, links: fundamentals.sources ?? [] },
       k: { asOfDate, links: fundamentals.sources ?? [] },

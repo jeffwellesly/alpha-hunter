@@ -3,14 +3,14 @@ import { useApp } from '../../context/AppContext'
 import Header from './Header'
 import TabNav from './TabNav'
 import DemoBanner from './DemoBanner'
-import WelcomeGate from './WelcomeGate'
+import Landing from './Landing'
 
 export default function Layout() {
   const { showWelcome } = useApp()
 
   return (
     <>
-      {showWelcome && <WelcomeGate />}
+      {showWelcome && <Landing />}
       <Header />
       <DemoBanner />
       <TabNav />

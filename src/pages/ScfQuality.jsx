@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useCompanyData } from '../hooks/useCompanyData'
 import { buildScfFlags, scfScore } from '../lib/scf'
+import InfoBadge from '../components/ui/InfoBadge'
 
 export default function ScfQuality() {
   const { data, loading, error } = useCompanyData()
@@ -56,6 +57,7 @@ export default function ScfQuality() {
               <div>
                 <div style={{ fontWeight: 600, fontSize: 14.5 }}>
                   {i + 1}. {flag.label}
+                  <InfoBadge explainKey={flag.key} />
                 </div>
                 <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4, lineHeight: 1.5 }}>{flag.explanation}</div>
               </div>

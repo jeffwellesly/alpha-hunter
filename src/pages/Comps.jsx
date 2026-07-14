@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useCompanyData } from '../hooks/useCompanyData'
 import { buildCompsTable, compsImpliedPrice, METRIC_LABELS } from '../lib/comps'
 import { fmtMultiple, fmtPct, fmtPrice, upsideClass } from '../lib/format'
-import SourceBadge from '../components/ui/SourceBadge'
+import InfoBadge from '../components/ui/InfoBadge'
 
 const METRIC_KEYS = ['tevRevenue', 'tevEbitda', 'tevEbit', 'pDilutedEps', 'pTangibleBv', 'ntmTevRevenue', 'ntmFwdPe']
 
@@ -44,7 +44,7 @@ export default function Comps() {
               <div className="card-subtitle">{data.ticker} vs. {data.comps.peers.length} peers — trading multiples as of {data.asOfDate}</div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div className="label">Comps-Implied Price</div>
+              <div className="label">Comps-Implied Price<InfoBadge explainKey="compsSource" /></div>
               <div className={`mono ${upsideClass(upside)}`} style={{ fontSize: 20, fontWeight: 700 }}>
                 {fmtPrice(impliedPrice)}
                 {upside != null && <span style={{ fontSize: 13, marginLeft: 8 }}>({fmtPct(upside)})</span>}
@@ -57,7 +57,7 @@ export default function Comps() {
                 <tr>
                   <th>Company</th>
                   {METRIC_KEYS.map((k) => (
-                    <th key={k}>{METRIC_LABELS[k]}</th>
+                    <th key={k}>{METRIC_LABELS[k]}<InfoBadge explainKey={k} /></th>
                   ))}
                 </tr>
               </thead>
@@ -67,7 +67,7 @@ export default function Comps() {
                     <td>
                       {peer.name} <span style={{ color: 'var(--text-tertiary)' }}>({peer.ticker})</span>
                       {peer.flag && <span title={peer.flag} style={{ color: 'var(--accent-gold)', marginLeft: 4 }}>⚠</span>}
-                      <SourceBadge info={data.sources?.peers?.[peer.ticker]} />
+                      <InfoBadge source={data.sources?.peers?.[peer.ticker]} />
                     </td>
                     {METRIC_KEYS.map((k) => (
                       <td key={k}>{fmtMultiple(peer[k])}</td>
@@ -78,14 +78,14 @@ export default function Comps() {
                 <tr className="row-highlight">
                   <td>
                     {data.companyName} ({data.ticker}) — Target
-                    <SourceBadge info={data.sources?.targetMetrics} />
+                    <InfoBadge source={data.sources?.targetMetrics} />
                   </td>
                   {METRIC_KEYS.map((k) => (
                     <td key={k}>{fmtMultiple(data.comps.targetMetrics[k])}</td>
                   ))}
                 </tr>
                 <tr>
-                  <td style={{ color: 'var(--text-tertiary)', fontStyle: 'italic' }}>Discount / Premium to Median</td>
+                  <td style={{ color: 'var(--text-tertiary)', fontStyle: 'italic' }}>Discount / Premium to Median<InfoBadge explainKey="discountToMedian" /></td>
                   {METRIC_KEYS.map((k) => (
                     <td key={k} className={upsideClass(table.discountToMedian[k] != null ? -table.discountToMedian[k] : null)}>
                       {fmtPct(table.discountToMedian[k])}
@@ -95,13 +95,17 @@ export default function Comps() {
 
                 {['high', 'low', 'mean', 'median'].map((stat) => (
                   <tr key={stat} className="row-summary">
-                    <td style={{ textTransform: 'capitalize' }}>{stat}</td>
+                    <td style={{ textTransform: 'capitalize' }}>
+                      {stat}
+                      {(stat === 'mean' || stat === 'median') && <InfoBadge explainKey="compsStat" />}
+                    </td>
                     {METRIC_KEYS.map((k) => (
                       <td key={k}>
                         {fmtMultiple(table.summary[k][stat])}
-                        {(stat === 'mean' || stat === 'median') && data.sources && (
-                          <SourceBadge
-                            info={{ asOfDate: data.asOfDate, links: [] }}
+                        {(stat === 'mean' || stat === 'median') && (
+                          <InfoBadge
+                            explanation={`The ${stat} of this multiple across all peers shown above.`}
+                            source={data.sources && { asOfDate: data.asOfDate, links: [] }}
                             components={data.comps.peers
                               .filter((p) => typeof p[k] === 'number')
                               .map((p) => ({ label: p.ticker, value: fmtMultiple(p[k]) }))}

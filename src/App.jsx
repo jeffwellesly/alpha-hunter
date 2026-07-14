@@ -7,7 +7,7 @@ import Rim from './pages/Rim'
 import FinancialHealth from './pages/FinancialHealth'
 import ScfQuality from './pages/ScfQuality'
 import AnalystViews from './pages/AnalystViews'
-import Docs from './pages/Docs'
+import About from './pages/About'
 import MyAnalyses from './pages/MyAnalyses'
 import Portfolio from './pages/Portfolio'
 
@@ -16,6 +16,8 @@ export default function App() {
     <AppProvider>
       <BrowserRouter>
         <Routes>
+          {/* Standalone - reachable regardless of app/session state, no Header/nav chrome */}
+          <Route path="about" element={<About />} />
           <Route element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="comps" element={<Comps />} />
@@ -23,7 +25,6 @@ export default function App() {
             <Route path="financials" element={<FinancialHealth />} />
             <Route path="scf" element={<ScfQuality />} />
             <Route path="analysts" element={<AnalystViews />} />
-            <Route path="docs" element={<Docs />} />
             <Route path="my-analyses" element={<MyAnalyses />} />
             <Route path="portfolio" element={<Portfolio />} />
           </Route>

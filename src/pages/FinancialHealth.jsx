@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useCompanyData } from '../hooks/useCompanyData'
 import { buildDupontTable, LEE_BENCHMARKS } from '../lib/dupont'
 import { fmtPrice, fmtPct, fmtMillions } from '../lib/format'
+import InfoBadge from '../components/ui/InfoBadge'
 
 const METRIC_ROWS = [
   { key: 'epsGaap', label: 'EPS (GAAP Diluted)', fmt: (v) => fmtPrice(v) },
@@ -83,10 +84,10 @@ export default function FinancialHealth() {
               <thead>
                 <tr>
                   <th>Year</th>
-                  <th>Net Margin</th>
-                  <th>Asset Turnover</th>
-                  <th>Financial Leverage</th>
-                  <th>ROE (derived)</th>
+                  <th>Net Margin<InfoBadge explainKey="netMargin" /></th>
+                  <th>Asset Turnover<InfoBadge explainKey="assetTurnover" /></th>
+                  <th>Financial Leverage<InfoBadge explainKey="financialLeverage" /></th>
+                  <th>ROE (derived)<InfoBadge explainKey="roe" /></th>
                 </tr>
               </thead>
               <tbody>
@@ -110,8 +111,8 @@ export default function FinancialHealth() {
             <div className="card-subtitle">Most recent year</div>
           </div>
           <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <BenchmarkRow label="ROA" value={latestDupont?.roa} benchmark={LEE_BENCHMARKS.roa} />
-            <BenchmarkRow label="ROE" value={latestDupont?.roe} benchmark={LEE_BENCHMARKS.roe} />
+            <BenchmarkRow label="ROA" value={latestDupont?.roa} benchmark={LEE_BENCHMARKS.roa} explainKey="roa" />
+            <BenchmarkRow label="ROE" value={latestDupont?.roe} benchmark={LEE_BENCHMARKS.roe} explainKey="roe" />
             <div style={{ fontSize: 11.5, color: 'var(--text-disabled)', lineHeight: 1.5, marginTop: 4 }}>
               Lee course (ACCTG 579) benchmarks: ROA ~6%, RNOA ~9%, ROE ~12%. RNOA requires a net-operating-asset split not available
               from standard financial statement line items shown here.
@@ -123,13 +124,13 @@ export default function FinancialHealth() {
   )
 }
 
-function BenchmarkRow({ label, value, benchmark }) {
+function BenchmarkRow({ label, value, benchmark, explainKey }) {
   const status = benchmarkStatus(value, benchmark)
   const color = status === 'green' ? 'var(--accent-green)' : status === 'yellow' ? 'var(--accent-gold)' : status === 'red' ? 'var(--accent-red)' : 'var(--text-tertiary)'
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
-        <span className="label">{label}</span>
+        <span className="label">{label}{explainKey && <InfoBadge explainKey={explainKey} />}</span>
         <span className="mono" style={{ color, fontWeight: 700, fontSize: 15 }}>{fmtPct(value)}</span>
       </div>
       <div style={{ fontSize: 11.5, color: 'var(--text-tertiary)' }}>Benchmark: {fmtPct(benchmark, { showSign: false })}</div>

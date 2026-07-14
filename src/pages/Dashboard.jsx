@@ -10,7 +10,7 @@ import VerdictBadge from '../components/ui/VerdictBadge'
 import Gauge from '../components/ui/Gauge'
 import ProgressBar from '../components/ui/ProgressBar'
 import PriceWaterfall from '../components/dashboard/PriceWaterfall'
-import SourceBadge from '../components/ui/SourceBadge'
+import InfoBadge from '../components/ui/InfoBadge'
 
 export default function Dashboard() {
   const { demoMode, hasAnthropicKey } = useApp()
@@ -108,24 +108,26 @@ export default function Dashboard() {
               <span style={{ fontSize: 26, fontWeight: 800 }}>{data.ticker}</span>
               <span style={{ fontSize: 15, color: 'var(--text-secondary)' }}>{data.companyName}</span>
               <VerdictBadge verdict={summary.verdict} />
+              <InfoBadge explainKey="verdict" />
             </div>
             <div style={{ marginTop: 6, fontSize: 13, color: 'var(--text-tertiary)' }}>
               {data.sector} · {data.industry} · as of {data.asOfDate}
             </div>
             <div style={{ marginTop: 18, display: 'flex', gap: 28, flexWrap: 'wrap' }}>
-              <Stat label="Current Price" value={fmtPrice(data.currentPrice)} />
-              <Stat label="Mean Fair Value" value={fmtPrice(summary.meanFairValue)} accent="var(--accent-blue)" />
-              <Stat label="Median Fair Value" value={fmtPrice(summary.medianFairValue)} />
+              <Stat label="Current Price" value={fmtPrice(data.currentPrice)} explainKey="currentPrice" />
+              <Stat label="Mean Fair Value" value={fmtPrice(summary.meanFairValue)} accent="var(--accent-blue)" explainKey="meanFairValue" />
+              <Stat label="Median Fair Value" value={fmtPrice(summary.medianFairValue)} explainKey="medianFairValue" />
               <Stat
                 label="Upside to Mean"
                 value={fmtPct(summary.upside)}
                 accent={summary.upside > 0 ? 'var(--accent-green)' : 'var(--accent-red)'}
+                explainKey="upside"
               />
             </div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
             <Gauge score={factorScore.score} />
-            <div className="label">Factor Score</div>
+            <div className="label">Factor Score<InfoBadge explainKey="factorScore" /></div>
           </div>
         </div>
       </div>
@@ -147,8 +149,9 @@ export default function Dashboard() {
                   <span className={`mono ${upsideClass(s.price != null && data.currentPrice ? s.price / data.currentPrice - 1 : null)}`}>
                     {fmtPrice(s.price)}
                     {s.label === 'RIM (terminal)' && (
-                      <SourceBadge
-                        info={data.sources?.fy1Eps}
+                      <InfoBadge
+                        explainKey="rimSource"
+                        source={data.sources?.fy1Eps}
                         components={[
                           { label: 'FY1/FY2 EPS, LTG', value: 'consensus' },
                           { label: 'BVPS, payout ratio', value: 'fundamentals' },
@@ -156,14 +159,15 @@ export default function Dashboard() {
                       />
                     )}
                     {s.label === 'Comps (peer median)' && (
-                      <SourceBadge
-                        info={data.sources && { asOfDate: data.asOfDate, links: [] }}
+                      <InfoBadge
+                        explainKey="compsSource"
+                        source={data.sources && { asOfDate: data.asOfDate, links: [] }}
                         components={data.comps?.peers
                           ?.filter((p) => typeof p.ntmFwdPe === 'number')
                           .map((p) => ({ label: p.ticker, value: `${p.ntmFwdPe.toFixed(1)}x` }))}
                       />
                     )}
-                    {s.label === 'Analyst consensus' && <SourceBadge info={data.sources?.analystViews} />}
+                    {s.label === 'Analyst consensus' && <InfoBadge explainKey="analystSource" source={data.sources?.analystViews} />}
                   </span>
                 </div>
               ))}
@@ -176,9 +180,9 @@ export default function Dashboard() {
             <div className="card-title">Factor Score Breakdown</div>
           </div>
           <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <ProgressBar label="SCF Quality" pct={factorScore.components.scf.pct} color="var(--accent-green)" />
-            <ProgressBar label="DuPont Health vs. Lee Benchmarks" pct={factorScore.components.dupont.pct} color="var(--accent-blue)" />
-            <ProgressBar label="Valuation Discount" pct={factorScore.components.valuation.pct} color="var(--accent-gold)" />
+            <ProgressBar label="SCF Quality" pct={factorScore.components.scf.pct} color="var(--accent-green)" explainKey="factorScoreScf" />
+            <ProgressBar label="DuPont Health vs. Lee Benchmarks" pct={factorScore.components.dupont.pct} color="var(--accent-blue)" explainKey="factorScoreDupont" />
+            <ProgressBar label="Valuation Discount" pct={factorScore.components.valuation.pct} color="var(--accent-gold)" explainKey="factorScoreValuation" />
           </div>
         </div>
       </div>
@@ -186,10 +190,10 @@ export default function Dashboard() {
   )
 }
 
-function Stat({ label, value, accent }) {
+function Stat({ label, value, accent, explainKey }) {
   return (
     <div>
-      <div className="label">{label}</div>
+      <div className="label">{label}{explainKey && <InfoBadge explainKey={explainKey} />}</div>
       <div className="mono" style={{ fontSize: 20, fontWeight: 700, color: accent || 'var(--text-primary)', marginTop: 2 }}>
         {value}
       </div>

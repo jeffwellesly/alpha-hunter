@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useCompanyData } from '../hooks/useCompanyData'
 import { computeOptimismBias } from '../lib/optimismBias'
 import { fmtPrice, fmtNumber } from '../lib/format'
-import SourceBadge from '../components/ui/SourceBadge'
+import InfoBadge from '../components/ui/InfoBadge'
 
 export default function AnalystViews() {
   const { data, loading, error } = useCompanyData()
@@ -41,17 +41,17 @@ export default function AnalystViews() {
               <div>
                 <div className="card-title">
                   Analyst Price Targets
-                  <SourceBadge info={data.sources?.analystViews} />
+                  <InfoBadge source={data.sources?.analystViews} />
                 </div>
                 <div className="card-subtitle">{fmtNumber(analystViews.numAnalysts)} analysts covering {data.ticker}</div>
               </div>
             </div>
             <div className="card-body" style={{ display: 'flex', gap: 40, flexWrap: 'wrap' }}>
-              <Stat label="Mean Target" value={fmtPrice(analystViews.targetMean)} accent="var(--accent-blue)" />
-              <Stat label="Median Target" value={fmtPrice(analystViews.targetMedian)} />
+              <Stat label="Mean Target" value={fmtPrice(analystViews.targetMean)} accent="var(--accent-blue)" explainKey="targetMean" />
+              <Stat label="Median Target" value={fmtPrice(analystViews.targetMedian)} explainKey="targetMedian" />
               {analystViews.targetHigh != null && <Stat label="High" value={fmtPrice(analystViews.targetHigh)} accent="var(--accent-green)" />}
               {analystViews.targetLow != null && <Stat label="Low" value={fmtPrice(analystViews.targetLow)} accent="var(--accent-red)" />}
-              <Stat label="Current Price" value={fmtPrice(data.currentPrice)} />
+              <Stat label="Current Price" value={fmtPrice(data.currentPrice)} explainKey="currentPrice" />
             </div>
           </div>
 
@@ -83,7 +83,7 @@ export default function AnalystViews() {
 
           <div className="card">
             <div className="card-header">
-              <div className="card-title">Optimism-Bias Flag</div>
+              <div className="card-title">Optimism-Bias Flag<InfoBadge explainKey="optimismBias" /></div>
               <div className="card-subtitle">Frankel &amp; Lee (1998) style: consensus LTG vs. realized historical EPS growth</div>
             </div>
             <div className="card-body">
@@ -102,10 +102,10 @@ export default function AnalystViews() {
   )
 }
 
-function Stat({ label, value, accent }) {
+function Stat({ label, value, accent, explainKey }) {
   return (
     <div>
-      <div className="label">{label}</div>
+      <div className="label">{label}{explainKey && <InfoBadge explainKey={explainKey} />}</div>
       <div className="mono" style={{ fontSize: 20, fontWeight: 700, color: accent || 'var(--text-primary)', marginTop: 2 }}>
         {value}
       </div>

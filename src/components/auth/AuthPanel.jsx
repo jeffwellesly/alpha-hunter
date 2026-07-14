@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { signInWithEmail, signUpWithEmail, signInWithGoogle } from '../../lib/auth'
 
-export default function AuthPanel({ onClose, onAuthed }) {
-  const [mode, setMode] = useState('signIn') // 'signIn' | 'signUp'
+export default function AuthPanel({ onClose, onAuthed, initialMode = 'signIn' }) {
+  const [mode, setMode] = useState(initialMode) // 'signIn' | 'signUp'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [username, setUsername] = useState('')
