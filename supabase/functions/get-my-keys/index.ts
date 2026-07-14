@@ -31,8 +31,13 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Unknown error'
+    // err may be a PostgrestError (plain object with .message, not
+    // necessarily `instanceof Error` in this runtime) as well as a real
+    // Error - check for a .message property first so the real cause
+    // surfaces instead of a useless "Unknown error".
+    const message = (err && typeof err === 'object' && 'message' in err && err.message) || String(err) || 'Unknown error'
     const status = message.includes('Authorization') || message.includes('session') ? 401 : 500
+    console.error('get-my-keys error:', message)
     return new Response(JSON.stringify({ error: message }), {
       status,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

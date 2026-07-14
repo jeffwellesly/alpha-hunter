@@ -12,13 +12,15 @@ function assertConfigured() {
 
 export async function signUpWithEmail({ email, password, username }) {
   assertConfigured()
-  const { data, error } = await supabase.auth.signUp({ email, password })
+  // Don't insert into profiles from here - with email confirmation required
+  // (the default), signUp() returns a user but no active session, so a
+  // client-side insert right after this hits RLS ("auth.uid() = id" has
+  // nothing to match against yet) and fails. The profiles row is created
+  // server-side by a trigger on auth.users insert (migrations/0002), reading
+  // username out of raw_user_meta_data below - works the same whether or
+  // not confirmation is required.
+  const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { username } } })
   if (error) throw error
-  const userId = data.user?.id
-  if (userId) {
-    const { error: profileError } = await supabase.from('profiles').insert({ id: userId, username })
-    if (profileError) throw profileError
-  }
   return data
 }
 

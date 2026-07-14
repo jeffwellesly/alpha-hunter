@@ -37,8 +37,9 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Unknown error'
+    const message = (err && typeof err === 'object' && 'message' in err && err.message) || String(err) || 'Unknown error'
     const status = message.includes('Authorization') || message.includes('session') ? 401 : 500
+    console.error('save-api-keys error:', message)
     return new Response(JSON.stringify({ error: message }), {
       status,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
