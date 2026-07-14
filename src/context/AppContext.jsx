@@ -21,6 +21,10 @@ export function AppProvider({ children }) {
   const [model, setModelState] = useState(getModel)
   const [ticker, setTicker] = useState(DEMO_TICKERS[0])
   const [demoMode, setDemoMode] = useState(true)
+  // Shown on load when no FMP key is saved yet - asks for keys up front,
+  // with a clear "skip to demo" path. Returning users who already have a
+  // key saved aren't nagged with it again.
+  const [showWelcome, setShowWelcome] = useState(!getFmpApiKey())
 
   // Live-mode target company data: fetched ONCE per ticker/key change here
   // (not per-tab) to stay within the FMP free-tier daily call budget.
@@ -90,6 +94,8 @@ export function AppProvider({ children }) {
     setLivePeers((prev) => prev.filter((p) => p.ticker !== peerTicker))
   }, [])
 
+  const dismissWelcome = useCallback(() => setShowWelcome(false), [])
+
   const value = useMemo(
     () => ({
       fmpApiKey,
@@ -110,6 +116,8 @@ export function AppProvider({ children }) {
       peerLoading,
       addPeer,
       removePeer,
+      showWelcome,
+      dismissWelcome,
       fmpCallCount: callLog.count,
     }),
     [
@@ -127,6 +135,8 @@ export function AppProvider({ children }) {
       peerLoading,
       addPeer,
       removePeer,
+      showWelcome,
+      dismissWelcome,
     ]
   )
 

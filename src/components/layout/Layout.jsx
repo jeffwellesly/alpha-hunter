@@ -1,11 +1,16 @@
 import { Outlet } from 'react-router-dom'
+import { useApp } from '../../context/AppContext'
 import Header from './Header'
 import TabNav from './TabNav'
 import DemoBanner from './DemoBanner'
+import WelcomeGate from './WelcomeGate'
 
 export default function Layout() {
+  const { showWelcome } = useApp()
+
   return (
     <>
+      {showWelcome && <WelcomeGate />}
       <Header />
       <DemoBanner />
       <TabNav />

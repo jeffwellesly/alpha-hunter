@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useApp } from '../../context/AppContext'
 import { useCompanyData } from '../../hooks/useCompanyData'
-import { DEMO_TICKERS } from '../../data/demo'
+import { DEMO_TICKERS, DEMO_DATA } from '../../data/demo'
 import { generateMemo } from '../../lib/docxExport'
 import SettingsModal from './SettingsModal'
 
@@ -81,15 +81,35 @@ export default function Header() {
             </span>
           </div>
 
-          <form onSubmit={submitTicker} style={{ display: 'flex', gap: 8, flex: 1, maxWidth: 260 }}>
-            <input
-              className="input"
-              value={tickerInput}
-              onChange={(e) => setTickerInput(e.target.value)}
-              placeholder="Ticker (e.g. AAPL)"
-              style={{ textTransform: 'uppercase', fontWeight: 700 }}
-            />
-          </form>
+          {demoMode ? (
+            <div style={{ display: 'flex', gap: 6 }} role="tablist" aria-label="Demo company">
+              {DEMO_TICKERS.map((t) => (
+                <button
+                  key={t}
+                  className="btn"
+                  onClick={() => setTicker(t)}
+                  title={DEMO_DATA[t].companyName}
+                  style={
+                    ticker === t
+                      ? { background: 'linear-gradient(135deg, #2f7fe0, #1c5fc2)', borderColor: 'transparent', color: 'white' }
+                      : undefined
+                  }
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <form onSubmit={submitTicker} style={{ display: 'flex', gap: 8, flex: 1, maxWidth: 260 }}>
+              <input
+                className="input"
+                value={tickerInput}
+                onChange={(e) => setTickerInput(e.target.value)}
+                placeholder="Ticker (e.g. AAPL)"
+                style={{ textTransform: 'uppercase', fontWeight: 700 }}
+              />
+            </form>
+          )}
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginLeft: 'auto' }}>
             <div
@@ -100,7 +120,10 @@ export default function Header() {
                 color: demoMode ? 'var(--accent-gold)' : 'var(--accent-green)',
                 border: `1px solid ${demoMode ? 'rgba(245,197,66,0.35)' : 'rgba(46,230,168,0.35)'}`,
               }}
-              onClick={() => setDemoMode(!demoMode)}
+              onClick={() => {
+                if (demoMode) setTickerInput(ticker)
+                setDemoMode(!demoMode)
+              }}
               title="Toggle demo/live mode"
             >
               {demoMode ? 'Demo Data' : 'Live Data'}

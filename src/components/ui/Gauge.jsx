@@ -4,59 +4,43 @@ function colorForScore(score) {
   return 'var(--accent-red)'
 }
 
-/** Semi-circle 0-100 gauge with a needle, matching the deep-navy theme. */
+/** Semi-circle 0-100 gauge, matching the deep-navy theme. */
 export default function Gauge({ score, size = 180 }) {
   const clamped = Math.max(0, Math.min(100, score ?? 0))
   const color = colorForScore(clamped)
+  const strokeWidth = 16
   const cx = size / 2
-  const cy = size / 2 + 6
-  const r = size / 2 - 18
+  const cy = size / 2
+  const r = size / 2 - strokeWidth / 2 - 4
+  const height = size / 2 + strokeWidth / 2 + 4
 
   const angleForScore = (s) => Math.PI - (s / 100) * Math.PI
-  const pointOnArc = (s, radius) => {
+  const pointOnArc = (s) => {
     const angle = angleForScore(s)
-    return { x: cx + radius * Math.cos(angle), y: cy - radius * Math.sin(angle) }
+    return { x: cx + r * Math.cos(angle), y: cy - r * Math.sin(angle) }
   }
 
-  const segments = [
-    { from: 0, to: 40, color: 'var(--accent-red)' },
-    { from: 40, to: 65, color: 'var(--accent-gold)' },
-    { from: 65, to: 100, color: 'var(--accent-green)' },
-  ]
-
-  const arcPath = (from, to, radius) => {
-    const start = pointOnArc(from, radius)
-    const end = pointOnArc(to, radius)
+  const arcPath = (from, to) => {
+    const start = pointOnArc(from)
+    const end = pointOnArc(to)
     const largeArc = to - from > 50 ? 1 : 0
-    return `M ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArc} 1 ${end.x} ${end.y}`
+    return `M ${start.x} ${start.y} A ${r} ${r} 0 ${largeArc} 1 ${end.x} ${end.y}`
   }
-
-  const needle = pointOnArc(clamped, r - 6)
 
   return (
-    <svg width={size} height={size / 2 + 30} viewBox={`0 0 ${size} ${size / 2 + 30}`}>
-      {segments.map((seg) => (
+    <svg width={size} height={height} viewBox={`0 0 ${size} ${height}`}>
+      <path d={arcPath(0, 100)} stroke="var(--bg-inset)" strokeWidth={strokeWidth} strokeLinecap="round" fill="none" />
+      {clamped > 0 && (
         <path
-          key={seg.from}
-          d={arcPath(seg.from, seg.to, r)}
-          stroke={seg.color}
-          strokeWidth={14}
+          d={arcPath(0, clamped)}
+          stroke={color}
+          strokeWidth={strokeWidth}
           strokeLinecap="round"
           fill="none"
-          opacity={0.35}
+          style={{ filter: `drop-shadow(0 0 5px ${color}99)` }}
         />
-      ))}
-      <path
-        d={arcPath(0, clamped, r)}
-        stroke={color}
-        strokeWidth={14}
-        strokeLinecap="round"
-        fill="none"
-        style={{ filter: `drop-shadow(0 0 6px ${color})` }}
-      />
-      <line x1={cx} y1={cy} x2={needle.x} y2={needle.y} stroke="var(--text-primary)" strokeWidth={2.5} strokeLinecap="round" />
-      <circle cx={cx} cy={cy} r={5} fill="var(--text-primary)" />
-      <text x={cx} y={cy - r / 2 - 4} textAnchor="middle" fontSize={30} fontWeight={800} fill={color} fontFamily="var(--font-mono)">
+      )}
+      <text x={cx} y={cy - 2} textAnchor="middle" fontSize={34} fontWeight={800} fill={color} fontFamily="var(--font-mono)">
         {Math.round(clamped)}
       </text>
     </svg>
