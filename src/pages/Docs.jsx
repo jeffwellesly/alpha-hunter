@@ -184,10 +184,17 @@ const SECTIONS = [
           wouldn't be.
         </p>
         <p>
-          <strong>Status:</strong> per-value source citations (which site a number came from, as-of date, and — for
-          averaged figures like peer medians or analyst consensus — every underlying data point that went into the
-          average) are planned but not yet built into the UI. Until then, treat every number as something to
-          spot-check before relying on it for a real decision, especially anything feeding the RIM or comps valuation.
+          Look for the small "i" icon next to a figure on the RIM, Comps, Analyst Views, and Summary Dashboard tabs
+          (live-mode analyses only — demo data predates this and has no source metadata). Clicking it shows the as-of
+          date and the source links Claude cited when researching that figure. For averaged values — the comps peer
+          mean/median, and the RIM tab's blended inputs — it also lists the individual per-peer or per-input values
+          that fed the average, not just the final number.
+        </p>
+        <p>
+          Not every figure has a specific captured URL (some come back as general web-search knowledge without a
+          single citable source) — those show an honest "no specific source URL captured" note rather than a fake
+          link. Treat every number as something to spot-check before relying on it for a real decision, especially
+          anything feeding the RIM or comps valuation.
         </p>
       </>
     ),
