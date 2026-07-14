@@ -7,6 +7,7 @@ import Rim from './pages/Rim'
 import FinancialHealth from './pages/FinancialHealth'
 import ScfQuality from './pages/ScfQuality'
 import AnalystViews from './pages/AnalystViews'
+import Docs from './pages/Docs'
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
             <Route path="financials" element={<FinancialHealth />} />
             <Route path="scf" element={<ScfQuality />} />
             <Route path="analysts" element={<AnalystViews />} />
+            <Route path="docs" element={<Docs />} />
           </Route>
         </Routes>
       </BrowserRouter>

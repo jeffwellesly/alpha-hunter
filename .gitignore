@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 .vercel
+cli/output
 
 # Defense-in-depth: this app takes API keys as runtime user input (stored in
 # the browser's localStorage only) and has no server-side secrets by design -

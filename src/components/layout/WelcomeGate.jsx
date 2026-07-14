@@ -1,11 +1,36 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useApp } from '../../context/AppContext'
 import { DEMO_DATA } from '../../data/demo'
+import { listPublicAnalyses, listAdminPortfolio, getAnalysis } from '../../lib/analysesApi'
+import AuthPanel from '../auth/AuthPanel'
 
 export default function WelcomeGate() {
-  const { setAnthropicApiKey, setDemoMode, setTicker, runAnalysis, dismissWelcome } = useApp()
+  const { setAnthropicApiKey, setDemoMode, setTicker, runAnalysis, viewSavedAnalysis, dismissWelcome, accountsEnabled } = useApp()
   const [anthropicDraft, setAnthropicDraft] = useState('')
   const [tickerDraft, setTickerDraft] = useState('')
+  const [publicAnalyses, setPublicAnalyses] = useState([])
+  const [adminPortfolio, setAdminPortfolio] = useState([])
+  const [authOpen, setAuthOpen] = useState(false)
+  const [loadingId, setLoadingId] = useState(null)
+
+  useEffect(() => {
+    if (!accountsEnabled) return
+    listPublicAnalyses().then(setPublicAnalyses).catch(() => {})
+    listAdminPortfolio().then(setAdminPortfolio).catch(() => {})
+  }, [accountsEnabled])
+
+  async function viewPublicAnalysis(row) {
+    setLoadingId(row.id)
+    try {
+      const full = await getAnalysis(row.id)
+      viewSavedAnalysis(full.results_json, full.ticker)
+      dismissWelcome()
+    } catch {
+      // stays on the gate, nothing to show if this fails
+    } finally {
+      setLoadingId(null)
+    }
+  }
 
   function startLive() {
     const key = anthropicDraft.trim()
@@ -56,6 +81,44 @@ export default function WelcomeGate() {
         </div>
 
         <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          {accountsEnabled && (
+            <>
+              <div>
+                <div className="label" style={{ marginBottom: 10 }}>Published analyses</div>
+                {publicAnalyses.length === 0 ? (
+                  <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>Nothing published yet — check back soon, or explore the demo below.</div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {publicAnalyses.map((row) => (
+                      <button
+                        key={row.id}
+                        className="btn"
+                        style={{ padding: '10px 14px', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                        onClick={() => viewPublicAnalysis(row)}
+                        disabled={loadingId === row.id}
+                      >
+                        <span><strong>{row.ticker}</strong> — {row.company_name}</span>
+                        <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{loadingId === row.id ? 'Loading…' : row.created_at?.slice(0, 10)}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {adminPortfolio.length > 0 && (
+                  <div style={{ marginTop: 10, fontSize: 11.5, color: 'var(--text-tertiary)' }}>
+                    Tracked portfolio: {adminPortfolio.map((p) => p.ticker).join(', ')}
+                  </div>
+                )}
+                <button className="btn" style={{ marginTop: 10 }} onClick={() => setAuthOpen(true)}>
+                  Sign in to run your own analysis
+                </button>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, color: 'var(--text-disabled)', fontSize: 12 }}>
+                <div style={{ flex: 1, height: 1, background: 'var(--border-subtle)' }} />
+                or skip accounts entirely
+                <div style={{ flex: 1, height: 1, background: 'var(--border-subtle)' }} />
+              </div>
+            </>
+          )}
           <div>
             <div className="label" style={{ marginBottom: 10 }}>Analyze any stock — bring your own Anthropic API key</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -105,6 +168,7 @@ export default function WelcomeGate() {
           </div>
         </div>
       </div>
+      {authOpen && <AuthPanel onClose={() => setAuthOpen(false)} />}
     </div>
   )
 }

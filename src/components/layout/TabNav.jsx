@@ -7,6 +7,7 @@ const TABS = [
   { to: '/financials', label: 'Financial Health' },
   { to: '/scf', label: 'SCF Quality' },
   { to: '/analysts', label: 'Analyst Views' },
+  { to: '/docs', label: 'How This Works' },
 ]
 
 export default function TabNav() {

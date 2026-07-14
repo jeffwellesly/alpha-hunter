@@ -8,6 +8,7 @@ import {
 } from '../lib/storage'
 import { supabaseConfigured } from '../lib/supabaseClient'
 import { getSession, onAuthStateChange, saveApiKeys, getMyKeys, signOut as authSignOut } from '../lib/auth'
+import { saveAnalysis } from '../lib/analysesApi'
 import { DEMO_TICKERS } from '../data/demo'
 import { runFullAnalysis } from '../shared/runAnalysis'
 
@@ -116,6 +117,17 @@ export function AppProvider({ children }) {
         })
         if (runTokenRef.current !== token) return
         setLiveTarget({ data: result, loading: false, error: null })
+        if (session) {
+          // Best-effort: a save failure shouldn't hide a perfectly good
+          // analysis result from the person who just waited for it.
+          saveAnalysis({
+            userId: session.user.id,
+            ticker: t,
+            companyName: result.companyName,
+            status: result.meta.errors ? 'partial' : 'complete',
+            resultsJson: result,
+          }).catch(() => {})
+        }
       } catch (err) {
         if (runTokenRef.current !== token) return
         setLiveTarget({ data: null, loading: false, error: err.message })
@@ -123,8 +135,16 @@ export function AppProvider({ children }) {
         if (runTokenRef.current === token) setAnalysisProgress(null)
       }
     },
-    [anthropicApiKey, model, ticker]
+    [anthropicApiKey, model, ticker, session]
   )
+
+  /** Loads a previously-saved or public analysis read-only, no re-fetch. */
+  const viewSavedAnalysis = useCallback((resultsJson, targetTicker) => {
+    runTokenRef.current++ // invalidate any in-flight run
+    setDemoMode(false)
+    setTicker(targetTicker)
+    setLiveTarget({ data: resultsJson, loading: false, error: null })
+  }, [])
 
   const dismissWelcome = useCallback(() => setShowWelcome(false), [])
 
@@ -143,6 +163,7 @@ export function AppProvider({ children }) {
       liveTarget,
       analysisProgress,
       runAnalysis,
+      viewSavedAnalysis,
       showWelcome,
       dismissWelcome,
       accountsEnabled: supabaseConfigured,
@@ -161,6 +182,7 @@ export function AppProvider({ children }) {
       liveTarget,
       analysisProgress,
       runAnalysis,
+      viewSavedAnalysis,
       showWelcome,
       dismissWelcome,
       session,
