@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useCompanyData } from '../hooks/useCompanyData'
 import { buildCompsTable, compsImpliedPrice, METRIC_LABELS } from '../lib/comps'
 import { fmtMultiple, fmtPct, fmtPrice, upsideClass } from '../lib/format'
+import SourceBadge from '../components/ui/SourceBadge'
 
 const METRIC_KEYS = ['tevRevenue', 'tevEbitda', 'tevEbit', 'pDilutedEps', 'pTangibleBv', 'ntmTevRevenue', 'ntmFwdPe']
 
@@ -66,6 +67,7 @@ export default function Comps() {
                     <td>
                       {peer.name} <span style={{ color: 'var(--text-tertiary)' }}>({peer.ticker})</span>
                       {peer.flag && <span title={peer.flag} style={{ color: 'var(--accent-gold)', marginLeft: 4 }}>⚠</span>}
+                      <SourceBadge info={data.sources?.peers?.[peer.ticker]} />
                     </td>
                     {METRIC_KEYS.map((k) => (
                       <td key={k}>{fmtMultiple(peer[k])}</td>
@@ -74,7 +76,10 @@ export default function Comps() {
                 ))}
 
                 <tr className="row-highlight">
-                  <td>{data.companyName} ({data.ticker}) — Target</td>
+                  <td>
+                    {data.companyName} ({data.ticker}) — Target
+                    <SourceBadge info={data.sources?.targetMetrics} />
+                  </td>
                   {METRIC_KEYS.map((k) => (
                     <td key={k}>{fmtMultiple(data.comps.targetMetrics[k])}</td>
                   ))}
@@ -92,7 +97,17 @@ export default function Comps() {
                   <tr key={stat} className="row-summary">
                     <td style={{ textTransform: 'capitalize' }}>{stat}</td>
                     {METRIC_KEYS.map((k) => (
-                      <td key={k}>{fmtMultiple(table.summary[k][stat])}</td>
+                      <td key={k}>
+                        {fmtMultiple(table.summary[k][stat])}
+                        {(stat === 'mean' || stat === 'median') && data.sources && (
+                          <SourceBadge
+                            info={{ asOfDate: data.asOfDate, links: [] }}
+                            components={data.comps.peers
+                              .filter((p) => typeof p[k] === 'number')
+                              .map((p) => ({ label: p.ticker, value: fmtMultiple(p[k]) }))}
+                          />
+                        )}
+                      </td>
                     ))}
                   </tr>
                 ))}

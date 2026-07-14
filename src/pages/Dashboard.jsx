@@ -10,6 +10,7 @@ import VerdictBadge from '../components/ui/VerdictBadge'
 import Gauge from '../components/ui/Gauge'
 import ProgressBar from '../components/ui/ProgressBar'
 import PriceWaterfall from '../components/dashboard/PriceWaterfall'
+import SourceBadge from '../components/ui/SourceBadge'
 
 export default function Dashboard() {
   const { demoMode, hasAnthropicKey } = useApp()
@@ -145,6 +146,24 @@ export default function Dashboard() {
                   <span style={{ color: 'var(--text-tertiary)' }}>{s.label}: </span>
                   <span className={`mono ${upsideClass(s.price != null && data.currentPrice ? s.price / data.currentPrice - 1 : null)}`}>
                     {fmtPrice(s.price)}
+                    {s.label === 'RIM (terminal)' && (
+                      <SourceBadge
+                        info={data.sources?.fy1Eps}
+                        components={[
+                          { label: 'FY1/FY2 EPS, LTG', value: 'consensus' },
+                          { label: 'BVPS, payout ratio', value: 'fundamentals' },
+                        ]}
+                      />
+                    )}
+                    {s.label === 'Comps (peer median)' && (
+                      <SourceBadge
+                        info={data.sources && { asOfDate: data.asOfDate, links: [] }}
+                        components={data.comps?.peers
+                          ?.filter((p) => typeof p.ntmFwdPe === 'number')
+                          .map((p) => ({ label: p.ticker, value: `${p.ntmFwdPe.toFixed(1)}x` }))}
+                      />
+                    )}
+                    {s.label === 'Analyst consensus' && <SourceBadge info={data.sources?.analystViews} />}
                   </span>
                 </div>
               ))}

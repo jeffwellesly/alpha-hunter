@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useCompanyData } from '../hooks/useCompanyData'
 import { computeOptimismBias } from '../lib/optimismBias'
 import { fmtPrice, fmtNumber } from '../lib/format'
+import SourceBadge from '../components/ui/SourceBadge'
 
 export default function AnalystViews() {
   const { data, loading, error } = useCompanyData()
@@ -38,7 +39,10 @@ export default function AnalystViews() {
           <div className="card">
             <div className="card-header">
               <div>
-                <div className="card-title">Analyst Price Targets</div>
+                <div className="card-title">
+                  Analyst Price Targets
+                  <SourceBadge info={data.sources?.analystViews} />
+                </div>
                 <div className="card-subtitle">{fmtNumber(analystViews.numAnalysts)} analysts covering {data.ticker}</div>
               </div>
             </div>

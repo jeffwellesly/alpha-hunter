@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useCompanyData } from '../hooks/useCompanyData'
 import { runRim, solveTargetRoe, horizonTableRows, TERMINAL_EPS_GROWTH_TARGET } from '../lib/rim'
 import { fmtPrice, fmtPct, fmtMultiple, upsideClass } from '../lib/format'
+import SourceBadge from '../components/ui/SourceBadge'
 
 const FIELD_DEFS = [
   { key: 'fy1Eps', label: 'FY1 EPS (Normalized)', step: 0.01, source: 'Claude web search (consensus)' },
@@ -87,6 +88,7 @@ export default function Rim() {
                 overridden={!!overridden[f.key]}
                 onChange={(v) => updateField(f.key, v)}
                 onReset={() => resetField(f.key)}
+                sourceInfo={data.sources?.[f.key]}
               />
             ))}
 
@@ -187,12 +189,12 @@ function StaticField({ label, value }) {
   )
 }
 
-function EditableField({ def, value, overridden, onChange, onReset }) {
+function EditableField({ def, value, overridden, onChange, onReset, sourceInfo }) {
   const displayValue = def.isPct && value != null ? (value * 100).toFixed(3) : value ?? ''
   return (
     <div>
       <div className="label" style={{ marginBottom: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span>{def.label}</span>
+        <span>{def.label}<SourceBadge info={sourceInfo} /></span>
         {overridden && (
           <button className="btn" style={{ padding: '2px 8px', fontSize: 11 }} onClick={onReset}>
             Reset

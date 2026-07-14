@@ -50,6 +50,7 @@ export async function runFullAnalysis({ ticker, peerTickers, anthropicKey, model
 
   onProgress('fetch_fundamentals', `Researching ${t} financials, cash flow, and comps multiples...`)
   const fundamentals = await fetchCompanyFundamentals({ ticker: t, model, apiKey: anthropicKey })
+  const asOfDate = new Date().toISOString().slice(0, 10)
 
   const data = {
     ticker: t,
@@ -57,7 +58,7 @@ export async function runFullAnalysis({ ticker, peerTickers, anthropicKey, model
     exchange: fundamentals.exchange ?? null,
     sector: fundamentals.sector ?? null,
     industry: fundamentals.industry ?? null,
-    asOfDate: new Date().toISOString().slice(0, 10),
+    asOfDate,
     currentPrice: fundamentals.currentPrice ?? null,
     marketCap: fundamentals.marketCap ?? null,
     sharesOutstanding: fundamentals.sharesOutstanding ?? null,
@@ -92,7 +93,21 @@ export async function runFullAnalysis({ ticker, peerTickers, anthropicKey, model
     analystViews: null,
     narrative: null,
 
-    fundamentalsSources: fundamentals.sources ?? [],
+    // Provenance, kept deliberately separate from the fields above rather
+    // than wrapping every value as {value, source, ...} - that would mean
+    // threading a new shape through rim.js/comps.js/dupont.js/scf.js
+    // (frozen, untouched) just to unwrap it again for math. UI-only
+    // consumers (SourceBadge) key into this by the same field names used
+    // above. Demo data has no equivalent, so badges simply don't render
+    // there - see spec Section 6.
+    sources: {
+      bvps: { asOfDate, links: fundamentals.sources ?? [] },
+      k: { asOfDate, links: fundamentals.sources ?? [] },
+      targetMetrics: { asOfDate, links: fundamentals.sources ?? [] },
+      financials: { asOfDate, links: fundamentals.sources ?? [] },
+      cashFlow: { asOfDate, links: fundamentals.sources ?? [] },
+      peers: {},
+    },
   }
 
   onProgress('discover_peers', 'Identifying comps peer set...')
@@ -125,6 +140,9 @@ export async function runFullAnalysis({ ticker, peerTickers, anthropicKey, model
   const peerErrors = peerResults.filter((p) => p.error)
   if (peerErrors.length) errors.peers = Object.fromEntries(peerErrors.map((p) => [p.ticker, p.error]))
   if (peerSources.length) data.comps.peerDiscoverySources = peerSources
+  for (const peer of data.comps.peers) {
+    data.sources.peers[peer.ticker] = { asOfDate, links: peer.sources ?? [] }
+  }
 
   onProgress('fetch_fiscal_calendar', 'Looking up fiscal calendar...')
   try {
@@ -137,6 +155,8 @@ export async function runFullAnalysis({ ticker, peerTickers, anthropicKey, model
     })
     data.rimInputNotes.nextFiscalYearEnd = 'Fiscal calendar lookup (Claude web search)'
     data.rimInputNotes.currentFiscalMonth = 'Computed from fiscal calendar lookup'
+    data.sources.nextFiscalYearEnd = { asOfDate, links: calendar.sources ?? [] }
+    data.sources.currentFiscalMonth = { asOfDate, links: calendar.sources ?? [] }
   } catch (err) {
     errors.fiscalCalendar = err.message
   }
@@ -151,6 +171,9 @@ export async function runFullAnalysis({ ticker, peerTickers, anthropicKey, model
     data.rimInputNotes.fy1Eps = 'Claude web search (consensus)'
     data.rimInputNotes.fy2Eps = 'Claude web search (consensus)'
     data.rimInputNotes.ltg = 'Claude web search (consensus)'
+    data.sources.fy1Eps = { asOfDate, links: consensus.sources ?? [] }
+    data.sources.fy2Eps = { asOfDate, links: consensus.sources ?? [] }
+    data.sources.ltg = { asOfDate, links: consensus.sources ?? [] }
 
     data.analystViews = {
       targetMean: consensus.targetPriceMean,
@@ -164,6 +187,7 @@ export async function runFullAnalysis({ ticker, peerTickers, anthropicKey, model
       longTermGrowthRate: consensus.longTermGrowthRate,
       sources: consensus.sources,
     }
+    data.sources.analystViews = { asOfDate, links: consensus.sources ?? [] }
   } catch (err) {
     errors.analystConsensus = err.message
   }
