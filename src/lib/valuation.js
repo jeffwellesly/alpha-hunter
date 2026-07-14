@@ -1,5 +1,5 @@
-import { solveTargetRoe } from './rim'
-import { compsImpliedPrice } from './comps'
+import { solveTargetRoe } from './rim.js'
+import { compsImpliedPrice } from './comps.js'
 
 export const VERDICT_THRESHOLD = 0.15
 

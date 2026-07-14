@@ -1,105 +1,135 @@
-import { createContext, useContext, useMemo, useState, useCallback, useEffect, useRef } from 'react'
+import { createContext, useContext, useMemo, useState, useCallback, useRef, useEffect } from 'react'
 import {
-  getFmpApiKey,
-  setFmpApiKey as persistFmpApiKey,
   getAnthropicApiKey,
   setAnthropicApiKey as persistAnthropicApiKey,
   getModel,
   setModel as persistModel,
   resetKeys as clearStoredKeys,
 } from '../lib/storage'
+import { supabaseConfigured } from '../lib/supabaseClient'
+import { getSession, onAuthStateChange, saveApiKeys, getMyKeys, signOut as authSignOut } from '../lib/auth'
 import { DEMO_TICKERS } from '../data/demo'
-import { getCompanyBundle, getPeerMetrics, callLog } from '../lib/fmp'
-import { peerMetricsToMultiples } from '../lib/comps'
-import { bundleToCompanyData } from '../lib/liveCompanyData'
+import { runFullAnalysis } from '../shared/runAnalysis'
 
 const AppContext = createContext(null)
 
 export function AppProvider({ children }) {
-  const [fmpApiKey, setFmpApiKeyState] = useState(getFmpApiKey)
+  // Key storage strategy: signed-in users (once a Supabase project exists)
+  // get server-side encrypted storage via save-api-keys/get-my-keys;
+  // everyone else (today: everyone, since no project exists yet) gets the
+  // original localStorage-only behavior. Never both at once, to avoid
+  // dual-write bugs between the two stores.
   const [anthropicApiKey, setAnthropicApiKeyState] = useState(getAnthropicApiKey)
   const [model, setModelState] = useState(getModel)
   const [ticker, setTicker] = useState(DEMO_TICKERS[0])
   const [demoMode, setDemoMode] = useState(true)
-  // Shown on load when no FMP key is saved yet - asks for keys up front,
-  // with a clear "skip to demo" path. Returning users who already have a
-  // key saved aren't nagged with it again.
-  const [showWelcome, setShowWelcome] = useState(!getFmpApiKey())
+  // Shown on load when no Anthropic key is saved yet - asks for a key up
+  // front, with a clear "skip to demo" path. Returning users who already
+  // have a key saved aren't nagged with it again.
+  const [showWelcome, setShowWelcome] = useState(!getAnthropicApiKey())
 
-  // Live-mode target company data: fetched ONCE per ticker/key change here
-  // (not per-tab) to stay within the FMP free-tier daily call budget.
-  const [liveTarget, setLiveTarget] = useState({ data: null, loading: false, error: null })
-  const [livePeers, setLivePeers] = useState([]) // [{ticker, multiples, error}]
-  const [peerLoading, setPeerLoading] = useState(false)
-  const fetchTokenRef = useRef(0)
+  const [session, setSession] = useState(null)
+  const [keysLoading, setKeysLoading] = useState(false)
 
-  const setFmpApiKey = useCallback((value) => {
-    persistFmpApiKey(value)
-    setFmpApiKeyState(value)
-  }, [])
-
-  const setAnthropicApiKey = useCallback((value) => {
-    persistAnthropicApiKey(value)
-    setAnthropicApiKeyState(value)
-  }, [])
-
-  const setModel = useCallback((value) => {
-    persistModel(value)
-    setModelState(value)
-  }, [])
-
-  const resetKeys = useCallback(() => {
-    clearStoredKeys()
-    setFmpApiKeyState('')
-    setAnthropicApiKeyState('')
+  useEffect(() => {
+    if (!supabaseConfigured) return
+    getSession()
+      .then((s) => setSession(s))
+      .catch(() => {})
+    return onAuthStateChange((s) => setSession(s))
   }, [])
 
   useEffect(() => {
-    setLivePeers([])
-    if (demoMode || !fmpApiKey) {
-      setLiveTarget({ data: null, loading: false, error: null })
-      return
-    }
-    const token = ++fetchTokenRef.current
-    setLiveTarget({ data: null, loading: true, error: null })
-    getCompanyBundle(ticker, fmpApiKey)
-      .then((bundle) => {
-        if (fetchTokenRef.current !== token) return
-        setLiveTarget({ data: bundleToCompanyData(ticker, bundle), loading: false, error: null })
+    if (!session) return
+    setKeysLoading(true)
+    getMyKeys()
+      .then(({ anthropicKey, model: savedModel }) => {
+        if (anthropicKey) setAnthropicApiKeyState(anthropicKey)
+        if (savedModel) setModelState(savedModel)
+        setShowWelcome(!anthropicKey)
       })
-      .catch((err) => {
-        if (fetchTokenRef.current !== token) return
-        setLiveTarget({ data: null, loading: false, error: err.message })
-      })
-  }, [ticker, demoMode, fmpApiKey])
+      .catch(() => {})
+      .finally(() => setKeysLoading(false))
+  }, [session])
 
-  const addPeer = useCallback(
-    async (peerTicker, name) => {
-      const t = peerTicker.trim().toUpperCase()
-      if (!t || !fmpApiKey) return
-      if (livePeers.some((p) => p.ticker === t)) return
-      setPeerLoading(true)
-      try {
-        const metrics = await getPeerMetrics(t, fmpApiKey)
-        const multiples = peerMetricsToMultiples({ ...metrics, name })
-        setLivePeers((prev) => [...prev, { ticker: t, multiples, error: metrics.error }])
-      } finally {
-        setPeerLoading(false)
+  // Live-mode target company: populated by an explicit runAnalysis() call,
+  // not fetched automatically on ticker change - a full analysis is a
+  // multi-step, multi-call Claude web-search pipeline (see
+  // shared/runAnalysis.js), not a cheap single request.
+  const [liveTarget, setLiveTarget] = useState({ data: null, loading: false, error: null })
+  const [analysisProgress, setAnalysisProgress] = useState(null) // { step, message } | null
+  const runTokenRef = useRef(0)
+
+  const setAnthropicApiKey = useCallback(
+    (value) => {
+      setAnthropicApiKeyState(value)
+      if (session) {
+        saveApiKeys({ anthropicKey: value, model }).catch(() => {})
+      } else {
+        persistAnthropicApiKey(value)
       }
     },
-    [fmpApiKey, livePeers]
+    [session, model]
   )
 
-  const removePeer = useCallback((peerTicker) => {
-    setLivePeers((prev) => prev.filter((p) => p.ticker !== peerTicker))
+  const setModel = useCallback(
+    (value) => {
+      setModelState(value)
+      if (session) {
+        saveApiKeys({ anthropicKey: anthropicApiKey, model: value }).catch(() => {})
+      } else {
+        persistModel(value)
+      }
+    },
+    [session, anthropicApiKey]
+  )
+
+  const resetKeys = useCallback(() => {
+    clearStoredKeys()
+    setAnthropicApiKeyState('')
   }, [])
+
+  const signOut = useCallback(async () => {
+    await authSignOut()
+    setSession(null)
+    resetKeys()
+  }, [resetKeys])
+
+  const runAnalysis = useCallback(
+    async (targetTicker, peerTickers) => {
+      if (!anthropicApiKey) return
+      const t = (targetTicker || ticker).trim().toUpperCase()
+      const token = ++runTokenRef.current
+      setDemoMode(false)
+      setTicker(t)
+      setLiveTarget({ data: null, loading: true, error: null })
+      setAnalysisProgress({ step: 'start', message: `Starting analysis for ${t}...` })
+      try {
+        const result = await runFullAnalysis({
+          ticker: t,
+          peerTickers,
+          anthropicKey,
+          model,
+          onProgress: (step, message) => {
+            if (runTokenRef.current === token) setAnalysisProgress({ step, message })
+          },
+        })
+        if (runTokenRef.current !== token) return
+        setLiveTarget({ data: result, loading: false, error: null })
+      } catch (err) {
+        if (runTokenRef.current !== token) return
+        setLiveTarget({ data: null, loading: false, error: err.message })
+      } finally {
+        if (runTokenRef.current === token) setAnalysisProgress(null)
+      }
+    },
+    [anthropicApiKey, model, ticker]
+  )
 
   const dismissWelcome = useCallback(() => setShowWelcome(false), [])
 
   const value = useMemo(
     () => ({
-      fmpApiKey,
-      setFmpApiKey,
       anthropicApiKey,
       setAnthropicApiKey,
       model,
@@ -109,34 +139,33 @@ export function AppProvider({ children }) {
       setTicker,
       demoMode,
       setDemoMode,
-      hasFmpKey: Boolean(fmpApiKey),
       hasAnthropicKey: Boolean(anthropicApiKey),
       liveTarget,
-      livePeers,
-      peerLoading,
-      addPeer,
-      removePeer,
+      analysisProgress,
+      runAnalysis,
       showWelcome,
       dismissWelcome,
-      fmpCallCount: callLog.count,
+      accountsEnabled: supabaseConfigured,
+      session,
+      keysLoading,
+      signOut,
     }),
     [
-      fmpApiKey,
       anthropicApiKey,
       model,
       ticker,
       demoMode,
-      setFmpApiKey,
       setAnthropicApiKey,
       setModel,
       resetKeys,
       liveTarget,
-      livePeers,
-      peerLoading,
-      addPeer,
-      removePeer,
+      analysisProgress,
+      runAnalysis,
       showWelcome,
       dismissWelcome,
+      session,
+      keysLoading,
+      signOut,
     ]
   )
 

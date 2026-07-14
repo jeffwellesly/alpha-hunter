@@ -3,15 +3,16 @@ import { useApp } from '../../context/AppContext'
 import { DEMO_DATA } from '../../data/demo'
 
 export default function WelcomeGate() {
-  const { setFmpApiKey, setAnthropicApiKey, setDemoMode, setTicker, dismissWelcome } = useApp()
-  const [fmpDraft, setFmpDraft] = useState('')
+  const { setAnthropicApiKey, setDemoMode, setTicker, runAnalysis, dismissWelcome } = useApp()
   const [anthropicDraft, setAnthropicDraft] = useState('')
+  const [tickerDraft, setTickerDraft] = useState('')
 
   function startLive() {
-    setFmpApiKey(fmpDraft.trim())
-    setAnthropicApiKey(anthropicDraft.trim())
-    setDemoMode(false)
+    const key = anthropicDraft.trim()
+    setAnthropicApiKey(key)
     dismissWelcome()
+    const t = tickerDraft.trim().toUpperCase()
+    if (t) runAnalysis(t)
   }
 
   function viewDemo(ticker) {
@@ -20,7 +21,7 @@ export default function WelcomeGate() {
     dismissWelcome()
   }
 
-  const canStartLive = fmpDraft.trim().length > 0
+  const canStartLive = anthropicDraft.trim().length > 0 && tickerDraft.trim().length > 0
 
   return (
     <div
@@ -56,28 +57,29 @@ export default function WelcomeGate() {
 
         <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <div>
-            <div className="label" style={{ marginBottom: 10 }}>Analyze any stock — bring your own API keys</div>
+            <div className="label" style={{ marginBottom: 10 }}>Analyze any stock — bring your own Anthropic API key</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <input
-                className="input"
-                type="password"
-                value={fmpDraft}
-                onChange={(e) => setFmpDraft(e.target.value)}
-                placeholder="Financial Modeling Prep API key (required)"
-              />
               <input
                 className="input"
                 type="password"
                 value={anthropicDraft}
                 onChange={(e) => setAnthropicDraft(e.target.value)}
-                placeholder="Anthropic API key (optional)"
+                placeholder="Anthropic API key (required)"
+              />
+              <input
+                className="input"
+                value={tickerDraft}
+                onChange={(e) => setTickerDraft(e.target.value)}
+                placeholder="Ticker (e.g. AAPL)"
+                style={{ textTransform: 'uppercase', fontWeight: 700 }}
               />
               <button className="btn btn-primary" onClick={startLive} disabled={!canStartLive}>
                 Start Live Analysis
               </button>
               <div style={{ fontSize: 11, color: 'var(--text-tertiary)', lineHeight: 1.5 }}>
-                Both are free to get (financialmodelingprep.com, console.anthropic.com). Keys stay in your browser only — see Settings
-                for details.
+                Free to get at console.anthropic.com. Every number is researched live via Claude web search — no financials API is
+                used, so figures can be wrong; verify anything load-bearing. Keys stay in your browser only — see Settings for
+                details.
               </div>
             </div>
           </div>

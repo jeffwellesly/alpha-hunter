@@ -1,5 +1,4 @@
-import { useMemo, useState } from 'react'
-import { useApp } from '../context/AppContext'
+import { useMemo } from 'react'
 import { useCompanyData } from '../hooks/useCompanyData'
 import { buildCompsTable, compsImpliedPrice, METRIC_LABELS } from '../lib/comps'
 import { fmtMultiple, fmtPct, fmtPrice, upsideClass } from '../lib/format'
@@ -7,9 +6,7 @@ import { fmtMultiple, fmtPct, fmtPrice, upsideClass } from '../lib/format'
 const METRIC_KEYS = ['tevRevenue', 'tevEbitda', 'tevEbit', 'pDilutedEps', 'pTangibleBv', 'ntmTevRevenue', 'ntmFwdPe']
 
 export default function Comps() {
-  const { demoMode, livePeers, peerLoading, addPeer, removePeer } = useApp()
   const { data, loading, error } = useCompanyData()
-  const [peerInput, setPeerInput] = useState('')
 
   const table = useMemo(() => {
     if (!data?.comps?.peers?.length) return null
@@ -29,59 +26,12 @@ export default function Comps() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      {!demoMode && (
-        <div className="card">
-          <div className="card-header">
-            <div>
-              <div className="card-title">Peer Group</div>
-              <div className="card-subtitle">Add tickers to build the comp set — each peer costs 2 FMP calls, cached for the day.</div>
-            </div>
-          </div>
-          <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault()
-                if (peerInput.trim()) addPeer(peerInput)
-                setPeerInput('')
-              }}
-              style={{ display: 'flex', gap: 8 }}
-            >
-              <input
-                className="input"
-                style={{ maxWidth: 200, textTransform: 'uppercase' }}
-                placeholder="Peer ticker"
-                value={peerInput}
-                onChange={(e) => setPeerInput(e.target.value)}
-              />
-              <button className="btn btn-primary" type="submit" disabled={peerLoading}>
-                {peerLoading ? 'Fetching…' : 'Add peer'}
-              </button>
-            </form>
-            {livePeers.length > 0 && (
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {livePeers.map((p) => (
-                  <span
-                    key={p.ticker}
-                    className="badge"
-                    style={{ background: p.error ? 'var(--accent-red-dim)' : 'var(--bg-inset)', color: p.error ? 'var(--accent-red)' : 'var(--text-secondary)', cursor: 'pointer' }}
-                    title={p.error || 'Click to remove'}
-                    onClick={() => removePeer(p.ticker)}
-                  >
-                    {p.ticker} {p.error ? '(error)' : ''} ✕
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
       {!data.comps?.peers?.length ? (
         <div className="card">
           <div className="card-body">
             <div className="card-title" style={{ marginBottom: 8 }}>No peer group yet</div>
             <div className="card-subtitle">
-              {demoMode ? 'No demo peers found for this ticker.' : 'Add at least one peer above to compute comps multiples.'}
+              The analysis run didn't find a usable peer group for this ticker — re-run Analyze from the header.
             </div>
           </div>
         </div>

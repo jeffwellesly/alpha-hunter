@@ -7,9 +7,9 @@ const FIELD_DEFS = [
   { key: 'fy1Eps', label: 'FY1 EPS (Normalized)', step: 0.01, source: 'Claude web search (consensus)' },
   { key: 'fy2Eps', label: 'FY2 EPS (Normalized)', step: 0.01, source: 'Claude web search (consensus)' },
   { key: 'ltg', label: 'Long-Term Growth Rate (Ltg)', step: 0.001, isPct: true, source: 'Claude web search' },
-  { key: 'bvps', label: 'Book Value / Share (last FYE)', step: 0.01, source: 'FMP' },
+  { key: 'bvps', label: 'Book Value / Share (last FYE)', step: 0.01, source: 'Claude web search' },
   { key: 'r', label: 'Discount Rate (r)', step: 0.001, isPct: true, source: 'Default 8%, user override' },
-  { key: 'k', label: 'Dividend Payout Ratio (k)', step: 0.001, isPct: true, source: 'FMP (avg DPS/EPS)' },
+  { key: 'k', label: 'Dividend Payout Ratio (k)', step: 0.001, isPct: true, source: 'Claude web search (dividend payout ratio)' },
   { key: 'nextFiscalYearEnd', label: 'Next Fiscal Year End', step: 1, isYear: true, source: 'Fiscal calendar lookup' },
   { key: 'currentFiscalMonth', label: 'Current Fiscal Month', step: 1, source: 'Computed from fiscal calendar' },
 ]

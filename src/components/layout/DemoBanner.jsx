@@ -1,7 +1,7 @@
 import { useApp } from '../../context/AppContext'
 
 export default function DemoBanner() {
-  const { demoMode, hasFmpKey } = useApp()
+  const { demoMode, hasAnthropicKey, analysisProgress } = useApp()
 
   if (!demoMode) {
     return (
@@ -15,7 +15,11 @@ export default function DemoBanner() {
           textAlign: 'center',
         }}
       >
-        Live mode — {hasFmpKey ? 'pulling fresh data from FMP' : 'add your FMP key in Settings to fetch live data'}
+        Live mode — {analysisProgress
+          ? analysisProgress.message
+          : hasAnthropicKey
+            ? 'researched live via Claude web search — verify anything load-bearing'
+            : 'add your Anthropic key in Settings, then enter a ticker to analyze'}
       </div>
     )
   }

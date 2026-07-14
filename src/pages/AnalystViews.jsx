@@ -1,86 +1,36 @@
-import { useMemo, useState } from 'react'
-import { useApp } from '../context/AppContext'
+import { useMemo } from 'react'
 import { useCompanyData } from '../hooks/useCompanyData'
 import { computeOptimismBias } from '../lib/optimismBias'
-import { fetchAnalystConsensus, flagAnalystOptimism } from '../lib/claude'
 import { fmtPrice, fmtNumber } from '../lib/format'
 
 export default function AnalystViews() {
-  const { demoMode, anthropicApiKey, model, hasAnthropicKey } = useApp()
   const { data, loading, error } = useCompanyData()
-  const [liveConsensus, setLiveConsensus] = useState(null)
-  const [fetchState, setFetchState] = useState({ loading: false, error: null })
-  const [claudeBias, setClaudeBias] = useState(null)
 
-  const analystViews = liveConsensus || data?.analystViews
+  const analystViews = data?.analystViews
 
   const localBias = useMemo(() => {
     if (!data) return null
-    const ltg = liveConsensus?.longTermGrowthRate ?? data.rimInputs?.ltg
-    return computeOptimismBias({ financials: data.financials, ltg })
-  }, [data, liveConsensus])
+    return computeOptimismBias({ financials: data.financials, ltg: data.rimInputs?.ltg })
+  }, [data])
+
+  // Live-mode runs compute this via Claude as part of the analysis pipeline
+  // (shared/runAnalysis.js); demo data has no equivalent, so fall back to
+  // the local client-side computation there.
+  const claudeBias = data?.optimismBias?.flagged !== undefined ? data.optimismBias : null
 
   if (loading) return <div className="card"><div className="card-body">Loading…</div></div>
   if (error) return <div className="card"><div className="card-body">{error}</div></div>
   if (!data) return <div className="card"><div className="card-body">No data.</div></div>
 
-  async function handleFetchConsensus() {
-    setFetchState({ loading: true, error: null })
-    try {
-      const consensus = await fetchAnalystConsensus({ ticker: data.ticker, model, apiKey: anthropicApiKey })
-      setLiveConsensus({
-        targetMean: consensus.targetPriceMean,
-        targetMedian: consensus.targetPriceMedian,
-        targetHigh: null,
-        targetLow: null,
-        numAnalysts: consensus.numAnalysts,
-        buy: consensus.ratingsBuy,
-        hold: consensus.ratingsHold,
-        sell: consensus.ratingsSell,
-        longTermGrowthRate: consensus.longTermGrowthRate,
-        sources: consensus.sources,
-      })
-      const bias = await flagAnalystOptimism({
-        ticker: data.ticker,
-        model,
-        apiKey: anthropicApiKey,
-        consensus,
-        historicalEpsGrowthCagr: null,
-      })
-      setClaudeBias(bias)
-    } catch (err) {
-      setFetchState({ loading: false, error: err.message })
-      return
-    }
-    setFetchState({ loading: false, error: null })
-  }
-
   const totalRatings = analystViews ? (analystViews.buy || 0) + (analystViews.hold || 0) + (analystViews.sell || 0) : 0
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      {!demoMode && (
-        <div className="card">
-          <div className="card-body" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
-            <div>
-              <div className="card-title">Analyst Consensus (Claude Web Search)</div>
-              <div className="card-subtitle">
-                {hasAnthropicKey ? 'FMP has no analyst-estimate data on the free tier — fetch consensus via Claude.' : 'Add your Anthropic API key in Settings to fetch analyst consensus.'}
-              </div>
-            </div>
-            <button className="btn btn-primary" onClick={handleFetchConsensus} disabled={!hasAnthropicKey || fetchState.loading}>
-              {fetchState.loading ? 'Fetching…' : 'Fetch consensus'}
-            </button>
-          </div>
-          {fetchState.error && <div style={{ padding: '0 22px 18px', fontSize: 12.5, color: 'var(--accent-red)' }}>{fetchState.error}</div>}
-        </div>
-      )}
-
       {!analystViews ? (
         <div className="card">
           <div className="card-body">
             <div className="card-title" style={{ marginBottom: 8 }}>No analyst data yet</div>
-            <div className="card-subtitle">{demoMode ? 'No demo analyst data found.' : 'Fetch consensus above to populate this tab.'}</div>
+            <div className="card-subtitle">The analysis run didn't find analyst consensus data for this ticker.</div>
           </div>
         </div>
       ) : (

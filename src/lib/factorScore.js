@@ -1,5 +1,5 @@
-import { LEE_BENCHMARKS } from './dupont'
-import { scfScore } from './scf'
+import { LEE_BENCHMARKS } from './dupont.js'
+import { scfScore } from './scf.js'
 
 function clamp01(v) {
   return Math.max(0, Math.min(1, v))

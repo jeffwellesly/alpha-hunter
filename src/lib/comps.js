@@ -48,38 +48,3 @@ export function compsImpliedPrice(peers, fy1Eps) {
   return s.median * fy1Eps
 }
 
-/**
- * Derives the 7 comps multiples from a cheap 2-call peer fetch (ratios +
- * key-metrics), rather than fetching each multiple individually. FMP's free
- * tier has no forward/NTM data, so NTM columns fall back to trailing values
- * as an approximation (same convention used in the demo datasets), flagged
- * via `approximated`.
- */
-export function peerMetricsToMultiples({ ticker, ratios, keyMetrics, name }) {
-  const tevRevenue = keyMetrics?.evToSales ?? null
-  const tevEbitda = keyMetrics?.evToEBITDA ?? null
-  const tevEbit =
-    keyMetrics?.evToEBITDA && ratios?.ebitdaMargin && ratios?.ebitMargin
-      ? keyMetrics.evToEBITDA * (ratios.ebitdaMargin / ratios.ebitMargin)
-      : null
-  const pDilutedEps = ratios?.priceToEarningsRatio ?? null
-  // Guard against a negative/near-zero tangible book value, which would
-  // otherwise produce a nonsensical multiple.
-  const pTangibleBv =
-    ratios?.priceToBookRatio && ratios?.bookValuePerShare && ratios?.tangibleBookValuePerShare > 0.01
-      ? ratios.priceToBookRatio * (ratios.bookValuePerShare / ratios.tangibleBookValuePerShare)
-      : null
-
-  return {
-    ticker,
-    name: name || ticker,
-    tevRevenue,
-    tevEbitda,
-    tevEbit,
-    pDilutedEps,
-    pTangibleBv,
-    ntmTevRevenue: tevRevenue,
-    ntmFwdPe: pDilutedEps,
-    approximated: ['ntmTevRevenue', 'ntmFwdPe'],
-  }
-}

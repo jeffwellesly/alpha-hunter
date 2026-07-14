@@ -4,11 +4,13 @@ import { useCompanyData } from '../../hooks/useCompanyData'
 import { DEMO_TICKERS, DEMO_DATA } from '../../data/demo'
 import { generateMemo } from '../../lib/docxExport'
 import SettingsModal from './SettingsModal'
+import AuthPanel from '../auth/AuthPanel'
 
 export default function Header() {
-  const { ticker, setTicker, demoMode, setDemoMode, hasFmpKey } = useApp()
+  const { ticker, setTicker, demoMode, setDemoMode, hasAnthropicKey, runAnalysis, analysisProgress, accountsEnabled, session, signOut } = useApp()
   const { data: companyData } = useCompanyData()
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [authOpen, setAuthOpen] = useState(false)
   const [tickerInput, setTickerInput] = useState(ticker)
   const [generatingMemo, setGeneratingMemo] = useState(false)
   const [memoError, setMemoError] = useState(null)
@@ -32,13 +34,14 @@ export default function Header() {
     e.preventDefault()
     const t = tickerInput.trim().toUpperCase()
     if (!t) return
-    if (!demoMode || DEMO_TICKERS.includes(t)) {
+    if (demoMode && DEMO_TICKERS.includes(t)) {
       setTicker(t)
-    } else {
-      // typing a non-demo ticker while in demo mode implies switching to live
-      setDemoMode(false)
-      setTicker(t)
+      return
     }
+    // typing a ticker while in demo mode, or any ticker in live mode, runs a
+    // fresh Claude-web-search analysis - there's no automatic per-ticker
+    // fetch anymore, this is the explicit trigger.
+    runAnalysis(t)
   }
 
   return (
@@ -100,15 +103,22 @@ export default function Header() {
               ))}
             </div>
           ) : (
-            <form onSubmit={submitTicker} style={{ display: 'flex', gap: 8, flex: 1, maxWidth: 260 }}>
+            <form onSubmit={submitTicker} style={{ display: 'flex', gap: 8, flex: 1, maxWidth: 320 }}>
               <input
                 className="input"
                 value={tickerInput}
                 onChange={(e) => setTickerInput(e.target.value)}
                 placeholder="Ticker (e.g. AAPL)"
                 style={{ textTransform: 'uppercase', fontWeight: 700 }}
+                disabled={!!analysisProgress}
               />
+              <button className="btn btn-primary" type="submit" disabled={!hasAnthropicKey || !!analysisProgress}>
+                {analysisProgress ? 'Analyzing…' : 'Analyze'}
+              </button>
             </form>
+          )}
+          {analysisProgress && (
+            <div style={{ fontSize: 12, color: 'var(--text-tertiary)', flexShrink: 0 }}>{analysisProgress.message}</div>
           )}
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginLeft: 'auto' }}>
@@ -137,8 +147,15 @@ export default function Header() {
               {generatingMemo ? 'Generating…' : 'Generate Memo'}
             </button>
             <button className="btn" onClick={() => setSettingsOpen(true)}>
-              Settings{hasFmpKey ? '' : ' •'}
+              Settings{hasAnthropicKey ? '' : ' •'}
             </button>
+            {accountsEnabled && (
+              session ? (
+                <button className="btn" onClick={signOut}>Sign out</button>
+              ) : (
+                <button className="btn" onClick={() => setAuthOpen(true)}>Sign in</button>
+              )
+            )}
           </div>
         </div>
         {memoError && (
@@ -146,6 +163,7 @@ export default function Header() {
         )}
       </header>
       {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
+      {authOpen && <AuthPanel onClose={() => setAuthOpen(false)} />}
     </>
   )
 }

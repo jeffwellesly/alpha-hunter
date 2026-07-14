@@ -1,7 +1,7 @@
 // SCF (Statement of Cash Flows) Quality: 6-point green/yellow/red checklist,
 // computed from cash flow statement data across the available years.
-// `cashFlow` rows use the shape from data/demo/*.js or the FMP-derived
-// equivalent (see hooks/useCompanyData.js).
+// `cashFlow` rows use the shape from data/demo/*.js or the Claude-web-search-
+// derived equivalent (see shared/runAnalysis.js).
 
 function pctChange(curr, prev) {
   if (curr == null || prev == null || prev === 0) return null

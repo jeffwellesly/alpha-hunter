@@ -12,7 +12,7 @@ import ProgressBar from '../components/ui/ProgressBar'
 import PriceWaterfall from '../components/dashboard/PriceWaterfall'
 
 export default function Dashboard() {
-  const { demoMode, hasFmpKey } = useApp()
+  const { demoMode, hasAnthropicKey } = useApp()
   const { data, loading, error } = useCompanyData()
 
   const summary = useMemo(() => {
@@ -49,14 +49,27 @@ export default function Dashboard() {
     )
   }
 
-  if (!demoMode && !hasFmpKey) {
+  if (!demoMode && !hasAnthropicKey) {
     return (
       <div className="card">
         <div className="card-body">
           <div className="card-title" style={{ marginBottom: 8 }}>
-            Add your FMP API key to use Live mode
+            Add your Anthropic API key to use Live mode
           </div>
           <div className="card-subtitle">Or flip back to Demo Data in the header to explore AlphaHunter with MU / LLY, no keys required.</div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!demoMode && !data && !loading && !error) {
+    return (
+      <div className="card">
+        <div className="card-body">
+          <div className="card-title" style={{ marginBottom: 8 }}>
+            Enter a ticker above and hit Analyze
+          </div>
+          <div className="card-subtitle">Runs a full Claude web-search-powered analysis - financials, comps, RIM, DuPont, SCF, and analyst consensus.</div>
         </div>
       </div>
     )
@@ -78,7 +91,7 @@ export default function Dashboard() {
             Not enough data yet to compute a verdict
           </div>
           <div className="card-subtitle">
-            Live mode needs a peer group (Comps tab) and analyst consensus (Analyst Views tab) before the Summary Dashboard can aggregate a fair value.
+            The analysis run didn't find enough peer/comps data to aggregate a fair value - re-run Analyze, or check the Comps tab for what came back.
           </div>
         </div>
       </div>

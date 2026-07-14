@@ -1,15 +1,12 @@
 import { useState } from 'react'
 import { useApp } from '../../context/AppContext'
 import { MODELS } from '../../lib/storage'
-import { clearFmpCache } from '../../lib/fmpCache'
 
 export default function SettingsModal({ onClose }) {
-  const { fmpApiKey, setFmpApiKey, anthropicApiKey, setAnthropicApiKey, model, setModel, resetKeys, fmpCallCount } = useApp()
-  const [fmpDraft, setFmpDraft] = useState(fmpApiKey)
+  const { anthropicApiKey, setAnthropicApiKey, model, setModel, resetKeys } = useApp()
   const [anthropicDraft, setAnthropicDraft] = useState(anthropicApiKey)
 
   function save() {
-    setFmpApiKey(fmpDraft.trim())
     setAnthropicApiKey(anthropicDraft.trim())
     onClose()
   }
@@ -34,7 +31,7 @@ export default function SettingsModal({ onClose }) {
         <div className="card-header">
           <div>
             <div className="card-title">API Keys & Settings</div>
-            <div className="card-subtitle">Stored only in your browser's localStorage. Never sent anywhere but FMP and Anthropic.</div>
+            <div className="card-subtitle">Stored only in your browser's localStorage. Never sent anywhere but Anthropic.</div>
           </div>
           <button className="btn" onClick={onClose}>
             Close
@@ -53,41 +50,15 @@ export default function SettingsModal({ onClose }) {
             borderRadius: 8,
           }}
         >
-          AlphaHunter has no backend server and no database - your keys are never sent to us or stored anywhere except this browser's
-          localStorage, and every FMP/Claude request goes directly from your browser to FMP/Anthropic. That also means: keys don't sync
-          across devices, clearing browser data removes them, and anyone with access to this browser/device could read them from
+          AlphaHunter has no backend server and no database - your key is never sent to us or stored anywhere except this browser's
+          localStorage, and every request goes directly from your browser to Anthropic. That also means: the key doesn't sync
+          across devices, clearing browser data removes it, and anyone with access to this browser/device could read it from
           localStorage - don't use this on a shared/public computer. Use "Reset keys" below before walking away from one.
         </div>
         <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
           <div>
             <div className="label" style={{ marginBottom: 6 }}>
-              Financial Modeling Prep API Key
-            </div>
-            <input
-              className="input"
-              type="password"
-              value={fmpDraft}
-              onChange={(e) => setFmpDraft(e.target.value)}
-              placeholder="Free key from financialmodelingprep.com"
-            />
-            <div style={{ fontSize: 11.5, color: 'var(--text-tertiary)', marginTop: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>
-                {fmpCallCount} live FMP call{fmpCallCount === 1 ? '' : 's'} this session (budget: ~22/stock, cached per ticker per day)
-              </span>
-              <button
-                className="btn"
-                style={{ padding: '2px 8px', fontSize: 11 }}
-                onClick={clearFmpCache}
-                title="Clear today's cached FMP responses to force fresh data"
-              >
-                Clear cache
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <div className="label" style={{ marginBottom: 6 }}>
-              Anthropic API Key (optional — for live analyst research & narrative)
+              Anthropic API Key
             </div>
             <input
               className="input"
@@ -96,6 +67,10 @@ export default function SettingsModal({ onClose }) {
               onChange={(e) => setAnthropicDraft(e.target.value)}
               placeholder="sk-ant-..."
             />
+            <div style={{ fontSize: 11.5, color: 'var(--text-tertiary)', marginTop: 6 }}>
+              This is the only data source AlphaHunter uses - every number on every tab is researched live via Claude web search,
+              which costs real API usage per analysis (multiple search-backed calls per ticker).
+            </div>
           </div>
 
           <div>
@@ -122,7 +97,6 @@ export default function SettingsModal({ onClose }) {
               style={{ color: 'var(--accent-red)' }}
               onClick={() => {
                 resetKeys()
-                setFmpDraft('')
                 setAnthropicDraft('')
               }}
             >
