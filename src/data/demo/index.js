@@ -1,11 +1,11 @@
-import { mrvlDemo } from './mrvl'
-import { nflxDemo } from './nflx'
+import { muDemo } from './mu'
+import { llyDemo } from './lly'
 
-export const DEMO_TICKERS = ['MRVL', 'NFLX']
+export const DEMO_TICKERS = ['MU', 'LLY']
 
 export const DEMO_DATA = {
-  MRVL: mrvlDemo,
-  NFLX: nflxDemo,
+  MU: muDemo,
+  LLY: llyDemo,
 }
 
 export function getDemoData(ticker) {

@@ -31,7 +31,7 @@ export default function DemoBanner() {
         textAlign: 'center',
       }}
     >
-      Demo mode — showing cached, pre-run analysis for MRVL / NFLX. No API keys required.
+      Demo mode — showing cached, pre-run analysis for MU / LLY. No API keys required.
     </div>
   )
 }

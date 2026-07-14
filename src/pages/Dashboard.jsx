@@ -56,7 +56,7 @@ export default function Dashboard() {
           <div className="card-title" style={{ marginBottom: 8 }}>
             Add your FMP API key to use Live mode
           </div>
-          <div className="card-subtitle">Or flip back to Demo Data in the header to explore AlphaHunter with MRVL / NFLX, no keys required.</div>
+          <div className="card-subtitle">Or flip back to Demo Data in the header to explore AlphaHunter with MU / LLY, no keys required.</div>
         </div>
       </div>
     )

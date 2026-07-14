@@ -10,7 +10,7 @@ This is a portfolio project demonstrating both financial-analysis rigor and appl
 
 **Live: [https://alpha-hunter-jeff.vercel.app](https://alpha-hunter-jeff.vercel.app)**
 
-Demo mode ships two fully pre-analyzed tickers (**MRVL**, **NFLX**) with real, researched data — no API keys required. Toggle to Live mode and bring your own free [Financial Modeling Prep](https://financialmodelingprep.com/) key (+ optional [Anthropic](https://console.anthropic.com/) key) to analyze any ticker.
+Demo mode ships two fully pre-analyzed tickers (**MU**, **LLY**) with real, researched data — no API keys required. Toggle to Live mode and bring your own free [Financial Modeling Prep](https://financialmodelingprep.com/) key (+ optional [Anthropic](https://console.anthropic.com/) key) to analyze any ticker.
 
 ## Stack
 
