@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-import { useApp } from '../context/AppContext'
 import { useCompanyData } from '../hooks/useCompanyData'
 import { buildValuationSummary } from '../lib/valuation'
 import { buildScfFlags } from '../lib/scf'
@@ -13,7 +12,6 @@ import PriceWaterfall from '../components/dashboard/PriceWaterfall'
 import InfoBadge from '../components/ui/InfoBadge'
 
 export default function Dashboard() {
-  const { demoMode, hasAnthropicKey } = useApp()
   const { data, loading, error } = useCompanyData()
 
   const summary = useMemo(() => {
@@ -46,32 +44,6 @@ export default function Dashboard() {
     return (
       <div className="card">
         <div className="card-body">Loading live data…</div>
-      </div>
-    )
-  }
-
-  if (!demoMode && !hasAnthropicKey) {
-    return (
-      <div className="card">
-        <div className="card-body">
-          <div className="card-title" style={{ marginBottom: 8 }}>
-            Add your Anthropic API key to use Live mode
-          </div>
-          <div className="card-subtitle">Or flip back to Demo Data in the header to explore AlphaHunter with MU / LLY, no keys required.</div>
-        </div>
-      </div>
-    )
-  }
-
-  if (!demoMode && !data && !loading && !error) {
-    return (
-      <div className="card">
-        <div className="card-body">
-          <div className="card-title" style={{ marginBottom: 8 }}>
-            Enter a ticker above and hit Analyze
-          </div>
-          <div className="card-subtitle">Runs a full Claude web-search-powered analysis - financials, comps, RIM, DuPont, SCF, and analyst consensus.</div>
-        </div>
       </div>
     )
   }

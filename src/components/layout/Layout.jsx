@@ -2,17 +2,18 @@ import { Outlet } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
 import Header from './Header'
 import TabNav from './TabNav'
-import DemoBanner from './DemoBanner'
-import Landing from './Landing'
+import AnalysisBanner from './AnalysisBanner'
+import Home from './Home'
 
 export default function Layout() {
-  const { showWelcome } = useApp()
+  const { data } = useApp()
+
+  if (!data) return <Home />
 
   return (
     <>
-      {showWelcome && <Landing />}
       <Header />
-      <DemoBanner />
+      <AnalysisBanner />
       <TabNav />
       <main style={{ flex: 1, maxWidth: 1320, width: '100%', margin: '0 auto', padding: '24px' }}>
         <Outlet />

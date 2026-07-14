@@ -1,47 +1,38 @@
 # Supabase setup
 
-**Status: live.** Project `alpha-hunter` (ref `pvrmqyobzarmzxpbsksr`, org "Jeff's Org",
-region us-east-1) was created via the Supabase CLI, which was already
-authenticated on this machine. Done automatically:
+**Concept, as of 2026-07-15**: AlphaHunter is a single-publisher content
+site. Jeff runs analyses via `cli/analyze.js` (no web login involved) and
+publishes them; visitors just browse and read - no accounts, no login, no
+self-serve analysis trigger in the web UI. The frontend has zero auth code
+left in it.
 
-- Schema + RLS applied (`migrations/0001_init.sql`)
-- `ENCRYPTION_SECRET` generated and set as an Edge Function secret
-- Both Edge Functions deployed (`save-api-keys`, `get-my-keys`) - verified
-  live, both correctly return 401 without an auth token
-- `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` set in Vercel (Production)
-  and in `.env.local` for local dev (git-ignored, not committed)
-- Email/password auth confirmed enabled by default
-  (`disable_signup: false`, `mailer_autoconfirm: false`)
-- End-to-end signup flow verified against the real project: got real,
-  distinct validation responses back (invalid-domain rejection, then the
-  project's free-tier email-send rate limit) - proof the client, Auth API,
-  and project config are correctly wired without needing to spend the full
-  email quota on throwaway accounts
+**What's actually used by the live site today:**
+- `analyses` table, `is_public = true` rows only, read via the anon key
+  (`lib/analysesApi.js`: `listPublicAnalyses`, `getAnalysis`).
+- Nothing else. `profiles`, `user_api_keys`, `portfolios`, `portfolio_runs`,
+  and both Edge Functions (`save-api-keys`, `get-my-keys`) are deployed and
+  functioning but currently unused by any code path - left in place rather
+  than torn down since removing live infra that isn't causing harm is a
+  worse trade than a bit of unused surface area. If a future feature needs
+  them (bringing back self-serve analysis, say), they're already there and
+  already verified working.
 
-**Remaining manual steps** (need your input, not code):
+**Publishing a new analysis** (the only thing that still needs Supabase
+credentials, and only for Jeff, via the CLI - not the web app):
+```
+SUPABASE_URL=https://pvrmqyobzarmzxpbsksr.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=<service_role key from `supabase projects api-keys`>
+ENCRYPTION_SECRET=<value set as the Edge Function secret - only needed if pulling the stored Anthropic key from the DB>
+ADMIN_USER_ID=82702adf-a2d1-43c1-9968-cf50bf070cb6
+```
+in `.env.cli` (git-ignored), then:
+```
+node cli/analyze.js MU
+```
+Without those env vars, the CLI falls back to standalone mode: reads a
+plain `ANTHROPIC_KEY` env var and just writes the result to
+`cli/output/<ticker>-<date>.json` locally instead of publishing.
 
-1. **Google OAuth** - not enabled (`google: false` in current auth
-   settings). Needs a Google Cloud OAuth client (client ID + secret) from
-   *your* Google Cloud Console - nothing in this repo can create that for
-   you. Email/password sign-up works today without it; add Google later in
-   Authentication → Providers if you want it.
-2. **Promote your own account to admin.** Sign up for a real account
-   through the live app (use a real, deliverable email - Supabase's
-   validation rejects `example.com`/similar and rate-limits repeated
-   throwaway signups), then run once in the Supabase SQL editor:
-   ```sql
-   update profiles set is_admin = true where username = 'your-username';
-   ```
-   Only after this does your account's analyses auto-count toward the
-   public landing page when you explicitly publish them (`setAnalysisPublic`
-   in `lib/analysesApi.js`), and only your account's `cli/analyze.js` runs
-   (via `ADMIN_USER_ID`) publish automatically.
-3. To run the admin CLI in Supabase mode, add to `.env.cli` (git-ignored):
-   ```
-   SUPABASE_URL=https://pvrmqyobzarmzxpbsksr.supabase.co
-   SUPABASE_SERVICE_ROLE_KEY=<service_role key from `supabase projects api-keys`>
-   ENCRYPTION_SECRET=<same value set as the Edge Function secret above>
-   ADMIN_USER_ID=<your auth.users id, once promoted>
-   ```
-   Until this exists, `cli/analyze.js` runs in standalone mode (plain
-   `ANTHROPIC_KEY` env var, writes to `cli/output/` locally).
+**The `Taswells` account** (`jeffwellesly4work@gmail.com`, `is_admin = true`)
+still exists and still works for sign-in if the auth UI ever comes back,
+but nothing in the current frontend surfaces a way to use it.

@@ -198,9 +198,8 @@ export default function About() {
           </div>
           <div className="card-body" style={{ fontSize: 13.5, color: 'var(--text-secondary)', lineHeight: 1.7, display: 'flex', flexDirection: 'column', gap: 10 }}>
             <p style={{ margin: 0 }}>
-              AlphaHunter has no financials API and no database of its own - Claude (Anthropic's AI model), using its
-              web search tool, is the only data source. When you click "Analyze," here's what actually happens, in
-              order:
+              AlphaHunter has no financials API - Claude (Anthropic's AI model), using its web search tool, is the
+              only data source. Here's what actually happens when I run an analysis, in order:
             </p>
             <ol style={{ paddingLeft: 20, lineHeight: 1.9, margin: 0 }}>
               <li><strong>Financials &amp; fundamentals</strong> - Claude researches the company's profile, ~3-5 years of income statement/balance sheet/cash flow history, and its own trading multiples.</li>
@@ -212,11 +211,12 @@ export default function About() {
               <li><strong>Narrative</strong> - Claude writes the plain-language overview, risks, and catalysts sections for the exportable memo.</li>
             </ol>
             <p style={{ margin: 0 }}>
-              This is a deliberate trade-off: it means AlphaHunter can analyze almost any ticker without being gated
-              behind a paid data plan, but individual researched numbers can occasionally be wrong in ways a licensed
-              filings API wouldn't be. Where available, a small "i" badge next to a live-mode figure shows the as-of
-              date and source link(s) Claude cited, and for averaged figures (peer medians, blended RIM inputs) the
-              individual values that fed the average.
+              This is a deliberate trade-off: it means an analysis can be produced for almost any ticker without being
+              gated behind a paid data plan, but individual researched numbers can occasionally be wrong in ways a
+              licensed filings API wouldn't be. Every number on every tab has a small "i" badge explaining how it's
+              calculated; for published analyses (not the two sample ones) it also shows the as-of date and source
+              link(s) Claude cited, and for averaged figures (peer medians, blended RIM inputs) the individual values
+              that fed the average.
             </p>
           </div>
         </div>
@@ -255,16 +255,11 @@ export default function About() {
           </div>
           <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: 13.5, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
             <p style={{ margin: 0 }}>
-              Look for the small "i" icon next to a figure on the RIM, Comps, Analyst Views, and Summary Dashboard tabs
-              (live-mode analyses only - demo data predates this and has no source metadata). Clicking it shows the
-              as-of date and source links Claude cited, and for averaged values, every individual value that fed the
-              average. Not every figure has a specific captured URL - those show an honest note rather than a fake
-              link.
-            </p>
-            <p style={{ margin: 0 }}>
-              A second, separate badge - visible on every number, in both demo and live mode - explains{' '}
-              <em>how that number is calculated</em> (the formula, not the data source). Look for it wherever you see
-              a small circled "i" next to a figure throughout the app.
+              Every "i" icon next to a figure explains <em>how that number is calculated</em> (the formula) - this
+              works everywhere, including on the two sample analyses. For a published analysis (not the two samples),
+              it also shows the as-of date and source links Claude cited when researching that figure, and for
+              averaged values, every individual value that fed the average. Not every figure has a specific captured
+              URL - those show an honest note rather than a fake link.
             </p>
           </div>
         </div>

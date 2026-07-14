@@ -8,15 +8,13 @@ import FinancialHealth from './pages/FinancialHealth'
 import ScfQuality from './pages/ScfQuality'
 import AnalystViews from './pages/AnalystViews'
 import About from './pages/About'
-import MyAnalyses from './pages/MyAnalyses'
-import Portfolio from './pages/Portfolio'
 
 export default function App() {
   return (
     <AppProvider>
       <BrowserRouter>
         <Routes>
-          {/* Standalone - reachable regardless of app/session state, no Header/nav chrome */}
+          {/* Standalone - reachable regardless of which analysis (if any) is being viewed, no Header/nav chrome */}
           <Route path="about" element={<About />} />
           <Route element={<Layout />}>
             <Route index element={<Dashboard />} />
@@ -25,8 +23,6 @@ export default function App() {
             <Route path="financials" element={<FinancialHealth />} />
             <Route path="scf" element={<ScfQuality />} />
             <Route path="analysts" element={<AnalystViews />} />
-            <Route path="my-analyses" element={<MyAnalyses />} />
-            <Route path="portfolio" element={<Portfolio />} />
           </Route>
         </Routes>
       </BrowserRouter>
