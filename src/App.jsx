@@ -8,6 +8,8 @@ import FinancialHealth from './pages/FinancialHealth'
 import ScfQuality from './pages/ScfQuality'
 import AnalystViews from './pages/AnalystViews'
 import Docs from './pages/Docs'
+import MyAnalyses from './pages/MyAnalyses'
+import Portfolio from './pages/Portfolio'
 
 export default function App() {
   return (
@@ -22,6 +24,8 @@ export default function App() {
             <Route path="scf" element={<ScfQuality />} />
             <Route path="analysts" element={<AnalystViews />} />
             <Route path="docs" element={<Docs />} />
+            <Route path="my-analyses" element={<MyAnalyses />} />
+            <Route path="portfolio" element={<Portfolio />} />
           </Route>
         </Routes>
       </BrowserRouter>

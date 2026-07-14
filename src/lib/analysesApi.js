@@ -90,3 +90,40 @@ export async function listMyPortfolio(userId) {
   if (error) throw error
   return data
 }
+
+/** Most recent verdict per ticker, for the portfolio "at a glance" view.
+ * Pulls only the fields needed from results_json rather than the full
+ * payload - a portfolio can hold many tickers' full analysis history. */
+export async function getLatestVerdictsByTicker(userId, tickers) {
+  assertConfigured()
+  if (!tickers.length) return {}
+  const { data, error } = await supabase
+    .from('analyses')
+    .select('ticker, created_at, results_json->valuationSummary->verdict, results_json->valuationSummary->upside')
+    .eq('user_id', userId)
+    .in('ticker', tickers)
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  const latest = {}
+  for (const row of data) {
+    if (!latest[row.ticker]) latest[row.ticker] = { verdict: row.verdict, upside: row.upside, asOf: row.created_at }
+  }
+  return latest
+}
+
+export async function startPortfolioRun({ userId, tickerList }) {
+  assertConfigured()
+  const { data, error } = await supabase
+    .from('portfolio_runs')
+    .insert({ user_id: userId, ticker_list: tickerList, status: 'in_progress' })
+    .select('id')
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function finishPortfolioRun(id, status) {
+  assertConfigured()
+  const { error } = await supabase.from('portfolio_runs').update({ status }).eq('id', id)
+  if (error) throw error
+}

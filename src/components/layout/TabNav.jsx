@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom'
+import { useApp } from '../../context/AppContext'
 
 const TABS = [
   { to: '/', label: 'Summary', end: true },
@@ -10,7 +11,15 @@ const TABS = [
   { to: '/docs', label: 'How This Works' },
 ]
 
+const ACCOUNT_TABS = [
+  { to: '/my-analyses', label: 'Previous Analyses' },
+  { to: '/portfolio', label: 'Portfolio' },
+]
+
 export default function TabNav() {
+  const { session } = useApp()
+  const tabs = session ? [...TABS, ...ACCOUNT_TABS] : TABS
+
   return (
     <nav
       style={{
@@ -32,7 +41,7 @@ export default function TabNav() {
           overflowX: 'auto',
         }}
       >
-        {TABS.map((tab) => (
+        {tabs.map((tab) => (
           <NavLink
             key={tab.to}
             to={tab.to}
