@@ -73,7 +73,7 @@ export default function FinancialHealth() {
         )}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 20, alignItems: 'start' }}>
+      <div className="ah-page-grid" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 20, alignItems: 'start' }}>
         <div className="card">
           <div className="card-header">
             <div className="card-title">DuPont Decomposition</div>

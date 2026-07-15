@@ -29,21 +29,23 @@ export default function PriceWaterfall({ currentPrice, sources, meanFairValue })
   const steps = [max, max * 0.75, max * 0.5, max * 0.25, 0]
 
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 24, height: 260, borderBottom: '1px solid var(--rule)', position: 'relative', paddingLeft: 56 }}>
-      <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }} className="mono">
-        {steps.map((s) => (
-          <span key={s} style={{ fontSize: 10.5, color: 'var(--muted-dim)' }}>{fmtCompactUsd(s)}</span>
-        ))}
-      </div>
-      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 22, flex: 1, height: '100%' }}>
-        {bars.map((b) => (
-          <div key={b.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, flex: 1, height: '100%', justifyContent: 'flex-end' }}>
-            <div style={{ width: '100%', height: `${(b.value / max) * 100}%`, background: COLORS[b.key], borderRadius: '3px 3px 0 0' }} />
-            <div style={{ fontSize: 11, color: 'var(--muted)', textAlign: 'center', lineHeight: 1.3 }}>
-              {b.label.split(' ').map((w, i) => <span key={i}>{w}<br /></span>)}
+    <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 24, height: 260, borderBottom: '1px solid var(--rule)', position: 'relative', paddingLeft: 56, minWidth: 380 }}>
+        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }} className="mono">
+          {steps.map((s) => (
+            <span key={s} style={{ fontSize: 10.5, color: 'var(--muted-dim)' }}>{fmtCompactUsd(s)}</span>
+          ))}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 22, flex: 1, height: '100%' }}>
+          {bars.map((b) => (
+            <div key={b.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, flex: 1, height: '100%', justifyContent: 'flex-end' }}>
+              <div style={{ width: '100%', height: `${(b.value / max) * 100}%`, background: COLORS[b.key], borderRadius: '3px 3px 0 0' }} />
+              <div style={{ fontSize: 11, color: 'var(--muted)', textAlign: 'center', lineHeight: 1.3 }}>
+                {b.label.split(' ').map((w, i) => <span key={i}>{w}<br /></span>)}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   )
