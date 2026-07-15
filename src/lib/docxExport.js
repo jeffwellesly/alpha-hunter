@@ -11,6 +11,7 @@ import {
   AlignmentType,
   BorderStyle,
   ShadingType,
+  Footer,
 } from 'docx'
 import { saveAs } from 'file-saver'
 import { buildValuationSummary } from './valuation'
@@ -20,6 +21,24 @@ import { fmtPrice, fmtPct, fmtMultiple, fmtMillions } from './format'
 
 const NAVY = '0A0F1E'
 const ACCENT = '1C5FC2'
+const WARNING = 'B7791F'
+
+const DISCLAIMER_TEXT =
+  'This document is a personal research log applying a fixed valuation methodology with AI-assisted research to publicly available data. It is provided for informational and educational purposes only and is NOT investment advice, NOT a recommendation to buy, hold, or sell any security, and NOT an offer or solicitation of any kind. The author is not a registered investment adviser, broker-dealer, or financial planner. Estimates, forecasts, and valuations involve significant uncertainty and may be inaccurate; AI-assisted research can contain errors. Past performance and model outputs are not indicative of future results. Do your own independent research and consult a licensed financial professional before making any investment decision. See Section 10 (References & Sources) for the data this analysis relies on, so it can be independently verified.'
+
+function disclaimerBlock() {
+  return new Paragraph({
+    spacing: { before: 120, after: 260 },
+    border: {
+      top: { style: BorderStyle.SINGLE, size: 6, color: WARNING, space: 6 },
+      bottom: { style: BorderStyle.SINGLE, size: 6, color: WARNING, space: 6 },
+    },
+    children: [
+      new TextRun({ text: 'DISCLAIMER — NOT INVESTMENT ADVICE: ', bold: true, size: 19, color: WARNING }),
+      new TextRun({ text: DISCLAIMER_TEXT, size: 19 }),
+    ],
+  })
+}
 
 function heading(text) {
   return new Paragraph({
@@ -147,6 +166,7 @@ export async function generateMemo(data) {
         new TextRun({ text: `  |  Fair Value Range: ${fmtPrice(fairLow)}–${fmtPrice(fairHigh)}  |  Current Price: ${fmtPrice(data.currentPrice)}`, size: 24 }),
       ],
     }),
+    disclaimerBlock(),
 
     heading('1. Company Overview'),
     body(n.companyOverview || 'Not available.'),
@@ -267,10 +287,34 @@ export async function generateMemo(data) {
       'Every figure in this memo traces back to one of the sources below, so every number can be independently verified against the original page it was taken from.'
     ),
     ...(data.sources?.length ? [sourcesTable(data.sources)] : [body('Not available for this analysis.')]),
+
+    disclaimerBlock(),
   ]
 
   const doc = new Document({
-    sections: [{ properties: {}, children }],
+    sections: [
+      {
+        properties: {},
+        footers: {
+          default: new Footer({
+            children: [
+              new Paragraph({
+                alignment: AlignmentType.CENTER,
+                children: [
+                  new TextRun({
+                    text: 'Not investment advice — a personal research log, not a recommendation to buy, hold, or sell any security.',
+                    size: 15,
+                    color: '888888',
+                    italics: true,
+                  }),
+                ],
+              }),
+            ],
+          }),
+        },
+        children,
+      },
+    ],
   })
 
   const blob = await Packer.toBlob(doc)
