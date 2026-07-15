@@ -31,6 +31,13 @@ export function buildValuationSummary({ rimInputs, comps, analystViews, currentP
   const solved = solveTargetRoe(rimInputs)
   const rimResult = solved.result
   const rimTerminalPrice = rimResult.impliedPrice[rimResult.impliedPrice.length - 1]
+  // A negative (or zero) implied price is not economically meaningful - it
+  // means the bisection solver had to reach for an extreme Target ROE to
+  // hit the terminal growth target, typically because BVPS is unusually
+  // thin relative to EPS (heavy buybacks, depleted equity, etc). Rather
+  // than let that pollute the blended fair value, drop RIM from the blend
+  // and flag it so the UI can say so explicitly instead of showing it.
+  const rimReliable = typeof rimTerminalPrice === 'number' && Number.isFinite(rimTerminalPrice) && rimTerminalPrice > 0
 
   const compsPrice = compsImpliedPrice(comps.peers, rimInputs.fy1Eps)
 
@@ -39,10 +46,10 @@ export function buildValuationSummary({ rimInputs, comps, analystViews, currentP
   const analystPrice = mean([analystMean, analystMedian].filter((v) => v != null)) ?? analystMean ?? analystMedian
 
   const sources = [
-    { label: 'RIM (terminal)', price: rimTerminalPrice },
+    rimReliable ? { label: 'RIM (terminal)', price: rimTerminalPrice } : null,
     { label: 'Comps (peer median)', price: compsPrice },
     { label: 'Analyst consensus', price: analystPrice },
-  ]
+  ].filter(Boolean)
 
   const validPrices = sources.map((s) => s.price).filter((v) => typeof v === 'number' && Number.isFinite(v))
   const meanFairValue = mean(validPrices)
@@ -52,7 +59,7 @@ export function buildValuationSummary({ rimInputs, comps, analystViews, currentP
   const verdict = verdictFromUpside(upside)
 
   return {
-    rim: { solved, result: rimResult, terminalPrice: rimTerminalPrice },
+    rim: { solved, result: rimResult, terminalPrice: rimTerminalPrice, reliable: rimReliable },
     compsPrice,
     analystPrice,
     sources,

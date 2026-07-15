@@ -263,6 +263,9 @@ export async function generateMemo(data) {
     ),
 
     heading('6. Valuation Synthesis & Target Price'),
+    ...(summary.rim.reliable
+      ? []
+      : [body(`RIM analysis excluded as unreliable: the model's implied price came out negative (${fmtPrice(summary.rim.terminalPrice)}), typically a sign book value per share is unusually thin relative to EPS. Fair value below reflects Comps + Analyst Consensus only.`)]),
     subheading('Table 5: Valuation Scenario Summary'),
     table(
       ['Scenario', 'Implied Price', 'Upside'],
