@@ -90,7 +90,7 @@ export default function Home() {
 
         <footer style={{ borderTop: '1px solid var(--rule)', padding: '32px 0 64px', fontSize: 12.5, color: 'var(--muted-dim)', maxWidth: '70ch', lineHeight: 1.7 }}>
           AlphaHunter applies a fixed equity-valuation methodology (residual income model, peer trading multiples, DuPont, and
-          cash-flow quality checks, based on the Alphanomics framework) to publicly available data, researched with AI
+          cash-flow quality checks) to publicly available data, researched with AI
           assistance. <b style={{ color: 'var(--muted)' }}>It is a research log, not investment advice</b> — see{' '}
           <Link to="/about" className="link">About</Link> for the full method and disclosure. Investing carries risk;
           decisions and outcomes are your own.

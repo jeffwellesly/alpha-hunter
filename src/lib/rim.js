@@ -1,5 +1,4 @@
-// RIM.512 / RIM.712 residual income model, reverse-engineered from the
-// Alphanomics (ACCTG 579) Excel workbooks. Formulas verified cell-for-cell
+// RIM.512 / RIM.712 residual income model. Formulas verified cell-for-cell
 // against a real MU RIM.512 workbook and the FSM_Complete_Stock_Analysis
 // reference memo (Table 3/Table 4).
 
