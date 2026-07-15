@@ -116,7 +116,7 @@ export default function About() {
             There's no financials API involved - Claude (Anthropic's AI model), using its web search tool, is the
             only data source. Here's what happens when I run an analysis, in order: research the company's
             fundamentals and its own trading multiples; identify and research 5-8 close peer companies; look up the
-            fiscal calendar; research analyst consensus; then compute the RIM engine, comps aggregation, DuPont
+            fiscal calendar; research analyst consensus; then compute the RIM engine, peer trading multiples aggregation, DuPont
             decomposition, SCF checklist, and Factor Score locally from those researched inputs using fixed formulas
             (not AI); finally write the plain-language narrative sections.
           </p>

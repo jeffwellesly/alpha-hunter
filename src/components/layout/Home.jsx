@@ -28,7 +28,7 @@ export default function Home() {
           <p style={subStyle}>
             Every write-up here follows the same five-step process —{' '}
             <b style={{ color: 'var(--bone)', fontWeight: 500 }}>
-              comps, residual income valuation, DuPont, cash-flow quality, analyst sentiment
+              peer trading multiples, residual income valuation, DuPont, cash-flow quality, analyst sentiment
             </b>
             . No shortcuts, no fitting the analysis to a conclusion I already had.
           </p>
@@ -80,7 +80,7 @@ export default function Home() {
           <div>
             <h3 style={{ fontFamily: 'var(--font-serif)', fontWeight: 500, fontSize: 19, marginBottom: 8 }}>Analyze a stock of your own</h3>
             <p style={{ color: 'var(--muted)', fontSize: 14, maxWidth: '46ch', margin: 0 }}>
-              Run the same comps + RIM + DuPont process on any ticker you pick, using the exact logic used here.
+              Run the same peer trading multiples + RIM + DuPont process on any ticker you pick, using the exact logic used here.
             </p>
           </div>
           <div className="mono" style={{ fontSize: 11, letterSpacing: '0.1em', color: 'var(--ink)', background: 'var(--amber)', padding: '6px 12px', borderRadius: 20, whiteSpace: 'nowrap', fontWeight: 600 }}>
@@ -89,7 +89,7 @@ export default function Home() {
         </div>
 
         <footer style={{ borderTop: '1px solid var(--rule)', padding: '32px 0 64px', fontSize: 12.5, color: 'var(--muted-dim)', maxWidth: '70ch', lineHeight: 1.7 }}>
-          AlphaHunter applies a fixed equity-valuation methodology (residual income model, peer comps, DuPont, and
+          AlphaHunter applies a fixed equity-valuation methodology (residual income model, peer trading multiples, DuPont, and
           cash-flow quality checks, based on the Alphanomics framework) to publicly available data, researched with AI
           assistance. <b style={{ color: 'var(--muted)' }}>It is a research log, not investment advice</b> — see{' '}
           <Link to="/about" className="link">About</Link> for the full method and disclosure. Investing carries risk;
