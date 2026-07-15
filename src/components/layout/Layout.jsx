@@ -15,7 +15,7 @@ export default function Layout() {
       <Header />
       <AnalysisBanner />
       <TabNav />
-      <main style={{ maxWidth: 1180, margin: '0 auto', padding: '32px 40px 80px' }}>
+      <main className="ah-dashboard-main" style={{ maxWidth: 1180, margin: '0 auto', padding: '32px 40px 80px' }}>
         <Outlet />
       </main>
     </div>

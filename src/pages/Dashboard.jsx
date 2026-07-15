@@ -73,7 +73,7 @@ export default function Dashboard() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <div className="card" style={{ padding: '32px 36px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 32, flexWrap: 'wrap' }}>
+      <div className="card ah-summary-card" style={{ padding: '32px 36px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 32, flexWrap: 'wrap' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 8, flexWrap: 'wrap' }}>
             <span className="mono" style={{ fontWeight: 700, fontSize: 26 }}>{data.ticker}</span>
@@ -84,7 +84,7 @@ export default function Dashboard() {
           <div className="mono" style={{ fontSize: 12, color: 'var(--muted-dim)', marginBottom: 22, textTransform: 'uppercase' }}>
             {[data.sector, data.industry, `as of ${data.asOfDate}`].filter(Boolean).join(' · ')}
           </div>
-          <div style={{ display: 'flex', gap: 48, flexWrap: 'wrap' }}>
+          <div className="ah-stat-row" style={{ display: 'flex', gap: 48, flexWrap: 'wrap' }}>
             <Stat label="Current Price" value={fmtPrice(data.currentPrice)} explainKey="currentPrice" />
             <Stat label="Mean Fair Value" value={fmtPrice(summary.meanFairValue)} accent="var(--blue)" explainKey="meanFairValue" />
             <Stat label="Median Fair Value" value={fmtPrice(summary.medianFairValue)} explainKey="medianFairValue" />
@@ -102,7 +102,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 24 }}>
+      <div className="ah-dashboard-grid" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 24 }}>
         <div className="card" style={{ padding: '28px 30px' }}>
           <div className="card-title" style={{ marginBottom: 4 }}>Valuation Waterfall</div>
           <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 28 }}>Current price vs. each valuation method vs. mean fair value</div>

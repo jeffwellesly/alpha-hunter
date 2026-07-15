@@ -43,6 +43,7 @@ export default function Ledger({ stocks, limit }) {
         return (
           <div key={stock.ticker}>
             <div
+              className="ah-ledger-row"
               onClick={() => (hasHistory ? setOpenTicker(isOpen ? null : stock.ticker) : open(latest, stock.ticker))}
               style={{
                 display: 'grid',
@@ -61,7 +62,7 @@ export default function Ledger({ stocks, limit }) {
                   {loadingId === latest.id ? 'Loading…' : `Published ${latest.date}`}
                 </span>
               </div>
-              <div className="mono" style={{ fontSize: 11, color: 'var(--muted-dim)', whiteSpace: 'nowrap' }}>
+              <div className="mono ah-ledger-history-count" style={{ fontSize: 11, color: 'var(--muted-dim)', whiteSpace: 'nowrap' }}>
                 {hasHistory ? `${stock.entries.length} analyses` : ''}
               </div>
               {latest.verdict && <VerdictBadge verdict={latest.verdict} size="md" />}

@@ -27,8 +27,8 @@ export default function Header() {
 
   return (
     <header style={{ borderBottom: '1px solid var(--rule)', background: 'rgba(12,15,18,0.9)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 40px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <div className="ah-topbar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 40px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
           <Link
             to="/"
             onClick={backToList}
@@ -44,7 +44,7 @@ export default function Header() {
             {companyData?.companyName ? ` — ${companyData.companyName}` : ''}
           </div>
         </div>
-        <div style={{ display: 'flex', gap: 10 }}>
+        <div className="ah-topbar-right" style={{ display: 'flex', gap: 10 }}>
           <Link to="/" onClick={backToList} className="btn">← All Analyses</Link>
           <button
             className="btn btn-primary"

@@ -9,6 +9,7 @@ const LINKS = [
 export default function Nav({ active }) {
   return (
     <nav
+      className="ah-nav"
       style={{
         position: 'sticky',
         top: 0,
@@ -37,7 +38,7 @@ export default function Nav({ active }) {
         <span style={{ width: 8, height: 8, background: 'var(--amber)', display: 'inline-block', borderRadius: 1 }} />
         ALPHAHUNTER
       </div>
-      <div style={{ display: 'flex', gap: 36, alignItems: 'center' }}>
+      <div className="ah-navlinks" style={{ display: 'flex', gap: 36, alignItems: 'center' }}>
         {LINKS.map((l) => (
           <Link
             key={l.key}

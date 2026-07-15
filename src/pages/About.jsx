@@ -59,7 +59,7 @@ export default function About() {
   return (
     <div style={{ position: 'fixed', inset: 0, overflowY: 'auto', background: 'var(--ink)', zIndex: 200 }}>
       <Nav active="about" />
-      <main style={{ maxWidth: 920, margin: '0 auto', padding: '0 48px 80px' }}>
+      <main className="ah-page-main" style={{ maxWidth: 920, margin: '0 auto', padding: '0 48px 80px' }}>
         <div style={{ padding: '80px 0 40px' }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, letterSpacing: '0.16em', color: 'var(--amber)', textTransform: 'uppercase', marginBottom: 22 }}>
             Method

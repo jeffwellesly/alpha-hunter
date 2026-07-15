@@ -325,3 +325,66 @@ table {
 .neutral {
   color: var(--amber);
 }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 720px) {
+  .ah-nav {
+    padding: 16px 20px !important;
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+  .ah-navlinks {
+    gap: 18px !important;
+  }
+  .ah-page-main {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+  .ah-hero-headline {
+    font-size: 32px !important;
+  }
+  .ah-methods-strip {
+    flex-direction: column;
+  }
+  .ah-methods-strip > div {
+    border-right: none !important;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 16px !important;
+  }
+  .ah-own-card {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+  .ah-topbar {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 12px;
+    padding: 16px 20px !important;
+  }
+  .ah-topbar-right {
+    width: 100%;
+  }
+  .ah-tabs {
+    padding: 0 20px !important;
+  }
+  .ah-summary-card {
+    flex-direction: column;
+    align-items: flex-start !important;
+    padding: 22px !important;
+  }
+  .ah-stat-row {
+    gap: 28px !important;
+  }
+  .ah-dashboard-main {
+    padding: 20px 20px 60px !important;
+  }
+  .ah-dashboard-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .ah-ledger-row {
+    grid-template-columns: 56px 1fr auto !important;
+  }
+  .ah-ledger-history-count {
+    display: none !important;
+  }
+}

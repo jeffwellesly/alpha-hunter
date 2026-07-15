@@ -19,27 +19,27 @@ export default function Home() {
   return (
     <div style={pageStyle}>
       <Nav active="home" />
-      <main style={mainStyle}>
+      <main className="ah-page-main" style={mainStyle}>
         <div style={{ padding: '96px 0 56px', borderBottom: '1px solid var(--rule)' }}>
           <div style={eyebrowStyle}>Research log · not investment advice</div>
-          <h1 style={headlineStyle}>
-            Equity research, <em style={{ fontStyle: 'italic', color: 'var(--amber)', fontWeight: 300 }}>published</em> as I build it.
+          <h1 className="ah-hero-headline" style={headlineStyle}>
+            How I actually value a stock — <em style={{ fontStyle: 'italic', color: 'var(--amber)', fontWeight: 300 }}>published</em> as I go.
           </h1>
           <p style={subStyle}>
-            Every write-up here runs the same fixed process —{' '}
+            Every write-up here follows the same five-step process —{' '}
             <b style={{ color: 'var(--bone)', fontWeight: 500 }}>
-              comps, residual income valuation, DuPont decomposition, cash-flow quality, and analyst sentiment
-            </b>{' '}
-            — so nothing is fitted to the stock after the fact. Read the method once, then read every ticker the same way.
+              comps, residual income valuation, DuPont, cash-flow quality, analyst sentiment
+            </b>
+            . No shortcuts, no fitting the analysis to a conclusion I already had.
           </p>
           <div style={{ display: 'flex', gap: 14, marginBottom: 8 }}>
             <Link to="/analyses" className="btn btn-primary">See latest analyses →</Link>
             <Link to="/about" className="btn">Read how it works</Link>
           </div>
 
-          <div style={{ display: 'flex', marginTop: 64, borderTop: '1px solid var(--rule)' }}>
+          <div className="ah-methods-strip" style={{ display: 'flex', marginTop: 64, borderTop: '1px solid var(--rule)' }}>
             {[
-              ['01', 'Comps'],
+              ['01', 'Peer Trading Multiples'],
               ['02', 'RIM'],
               ['03', 'DuPont'],
               ['04', 'SCF Quality'],
@@ -64,6 +64,7 @@ export default function Home() {
         </div>
 
         <div
+          className="ah-own-card"
           style={{
             margin: '56px 0 96px',
             border: '1px dashed var(--rule)',
@@ -124,10 +125,10 @@ const eyebrowStyle = {
 const headlineStyle = {
   fontFamily: 'var(--font-serif)',
   fontWeight: 500,
-  fontSize: 56,
-  lineHeight: 1.08,
+  fontSize: 48,
+  lineHeight: 1.12,
   letterSpacing: '-0.01em',
-  maxWidth: '11.5ch',
+  maxWidth: '18ch',
   marginBottom: 26,
 }
 

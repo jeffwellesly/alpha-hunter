@@ -12,7 +12,7 @@ const TABS = [
 
 export default function TabNav() {
   return (
-    <nav style={{ display: 'flex', gap: 0, padding: '0 40px', borderBottom: '1px solid var(--rule)', overflowX: 'auto' }}>
+    <nav className="ah-tabs" style={{ display: 'flex', gap: 0, padding: '0 40px', borderBottom: '1px solid var(--rule)', overflowX: 'auto' }}>
       {TABS.map((tab) => (
         <NavLink
           key={tab.to}
