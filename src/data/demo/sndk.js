@@ -125,4 +125,92 @@ export const sndkDemo = {
     investmentThesis:
       'Sandisk is a pure-play way to express the same AI-driven memory supercycle thesis as Micron, but concentrated entirely in NAND flash rather than diversified across DRAM/HBM - and the market has re-rated it even more dramatically, up over 4,000% from its post-spinoff lows. At $1,757.82, the stock trades on a trailing P/E of ~59x but a forward P/E of under 10x, reflecting consensus expectations that EPS roughly triples from FY2026 (~$66) to FY2027 (~$180) and climbs further toward a projected FY2028 peak near $264. The RIM and comps analyses both essentially agree with the sell side that near-term earnings power is real and dramatically higher than pre-supercycle levels - the open question is durability, not the current run-rate itself. With a $1,000-$3,250 analyst target range, a debt-free balance sheet as of the most recent quarter, and a single-product (NAND-only) profile that offers no cushion if pricing normalizes, this reads as a high-conviction but high-variance way to play the memory cycle - appropriate only for investors comfortable underwriting genuine cyclical-peak risk alongside the upside.',
   },
+
+  sources: [
+    {
+      category: 'Company Profile & Current Price',
+      url: 'https://stockanalysis.com/stocks/sndk/',
+      dataUsed: 'Current price ($1,757.82), market cap, shares outstanding, trailing P/E (59.17), forward P/E (9.73), sector/industry, 52-week range, dividend info (none paid).',
+    },
+    {
+      category: 'Historical Financials (FY2023A-FY2025A, TTM)',
+      url: 'https://stockanalysis.com/stocks/sndk/financials/',
+      dataUsed: 'FY2025/TTM revenue, net income, operating income (EBIT), EBITDA, diluted EPS, margins, free cash flow.',
+    },
+    {
+      category: 'Historical Financials, 10-year view (FY2023A/FY2024A detail)',
+      url: 'https://stockanalysis.com/stocks/sndk/financials/?p=10-year',
+      dataUsed: 'FY2023A and FY2024A revenue, net income, diluted EPS, EBITDA, operating income (pre-spinoff carve-out figures).',
+    },
+    {
+      category: 'Balance Sheet (BVPS, equity, assets)',
+      url: 'https://stockanalysis.com/stocks/sndk/financials/balance-sheet/',
+      dataUsed: 'TTM/FY2025 total assets, total equity, total debt, cash, and book value per share (used as rimInputs.bvps = $90.79).',
+    },
+    {
+      category: 'Balance Sheet, 10-year view (FY2023A/FY2024A detail)',
+      url: 'https://stockanalysis.com/stocks/sndk/financials/balance-sheet/?p=10-year',
+      dataUsed: 'FY2023A/FY2024A total assets, total equity, receivables, payables, inventory.',
+    },
+    {
+      category: 'Cash Flow Statement',
+      url: 'https://stockanalysis.com/stocks/sndk/financials/cash-flow-statement/',
+      dataUsed: 'TTM/FY2025 CFO, CFI, CapEx, D&A, financing activities detail (debt issued/repaid, net debt activity).',
+    },
+    {
+      category: 'Cash Flow Statement, 10-year view (FY2023A/FY2024A detail)',
+      url: 'https://stockanalysis.com/stocks/sndk/financials/cash-flow-statement/?p=10-year',
+      dataUsed: 'FY2023A/FY2024A CFO, CapEx, D&A.',
+    },
+    {
+      category: 'Forward Estimates / Analyst Consensus (EPS, revenue, price target)',
+      url: 'https://stockanalysis.com/stocks/sndk/forecast/',
+      dataUsed: 'FY2026 consensus EPS ($66.41) and revenue (~$19.8B) from 19 analysts (rimInputs.fy1Eps); consensus price target $2,035.05 (15.77% upside cited at time of research).',
+    },
+    {
+      category: 'Spinoff from Western Digital (fiscal calendar / corporate history)',
+      url: 'https://www.sec.gov/Archives/edgar/data/0000106040/000162828026004131/a4ex991-pressreleaseq126.htm',
+      dataUsed: 'Confirmation of Sandisk\'s spinoff from Western Digital completing February 21, 2025, used to determine which fiscal years are pre-spinoff carve-out results.',
+    },
+    {
+      category: 'Fiscal Q3 FY2026 Results (most recent reported quarter)',
+      url: 'https://www.businesswire.com/news/home/20260430227141/en/Sandisk-Reports-Fiscal-Third-Quarter-2026-Financial-Results',
+      dataUsed: 'Q3 FY26 revenue ($5.95B), GAAP EPS ($23.03), non-GAAP EPS ($23.41), and Q4 FY26 guidance ($7.75-8.25B revenue, $30-33 non-GAAP EPS) - used in macroEnvironment and keyRisks narrative.',
+    },
+    {
+      category: 'Analyst Price Target Revision (Goldman Sachs)',
+      url: 'https://www.thestreet.com/investing/stocks/sndk-sandisk-stock-price-target-goldman-sachs-july-2026-nand-supply',
+      dataUsed: 'Goldman Sachs price target raised to ~$2,200 on NAND supply tightness, cited in nearTermCatalysts/macroEnvironment.',
+    },
+    {
+      category: 'FY2027/FY2028 EPS Estimate Context',
+      url: 'https://www.fool.com/investing/2026/06/24/prediction-this-will-be-sandisks-stock-price-by-ye/',
+      dataUsed: 'FY2027 EPS estimate (~$183) and FY2028 EPS estimate (~$264) used to cross-check rimInputs.fy2Eps ($180) and describe the projected earnings trajectory in the narrative.',
+    },
+    {
+      category: 'Peer Comps - Western Digital (WDC)',
+      url: 'https://stockanalysis.com/stocks/wdc/',
+      dataUsed: 'WDC price, trailing/forward P/E, used as inputs to WDC\'s TEV/Revenue, TEV/EBITDA, TEV/EBIT, P/Diluted EPS multiples in the peer comps table.',
+    },
+    {
+      category: 'Peer Comps - Western Digital (WDC) financials',
+      url: 'https://stockanalysis.com/stocks/wdc/financials/',
+      dataUsed: 'WDC TTM revenue, EBITDA, EBIT used to compute TEV-based multiples in the peer comps table.',
+    },
+    {
+      category: 'Peer Comps - Seagate Technology (STX)',
+      url: 'https://stockanalysis.com/stocks/stx/',
+      dataUsed: 'STX price, trailing/forward P/E, used as inputs to STX\'s TEV/Revenue, TEV/EBITDA, TEV/EBIT, P/Diluted EPS multiples in the peer comps table.',
+    },
+    {
+      category: 'Peer Comps - Seagate Technology (STX) financials',
+      url: 'https://stockanalysis.com/stocks/stx/financials/',
+      dataUsed: 'STX TTM revenue, EBITDA, EBIT used to compute TEV-based multiples in the peer comps table.',
+    },
+    {
+      category: 'Peer Comps - Micron (MU) cross-reference',
+      url: 'https://stockanalysis.com/stocks/mu/',
+      dataUsed: 'MU\'s P/Tangible BV (10.68) and NTM TEV/Revenue (4.4) reused from the same-week MU research (2026-07-13) rather than re-derived, per the comps.note disclosure.',
+    },
+  ],
 }

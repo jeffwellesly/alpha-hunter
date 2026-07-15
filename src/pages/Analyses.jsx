@@ -23,7 +23,7 @@ export default function Analyses() {
           <h1 style={{ fontFamily: 'var(--font-serif)', fontWeight: 500, fontSize: 34, marginBottom: 10 }}>Latest analyses</h1>
           <p style={{ color: 'var(--muted)', fontSize: 15, margin: 0 }}>
             Every published write-up, most recent first. Tickers revisited more than once show their full history —
-            click a row to expand it.
+            click a row to expand it. <b style={{ color: 'var(--bone)', fontWeight: 500 }}>This is a research log, not investment advice.</b>
           </p>
         </div>
         <Ledger stocks={stocks} />

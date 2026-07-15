@@ -78,6 +78,46 @@ function table(headerCells, rows, firstColAlign = AlignmentType.LEFT) {
   })
 }
 
+function sourceCell(text, { header = false, widthPct } = {}) {
+  return new TableCell({
+    width: { size: widthPct, type: WidthType.PERCENTAGE },
+    margins: CELL_MARGIN,
+    borders: CELL_BORDERS,
+    shading: header ? { type: ShadingType.SOLID, color: NAVY, fill: NAVY } : undefined,
+    children: [
+      new Paragraph({
+        alignment: AlignmentType.LEFT,
+        children: [new TextRun({ text: String(text ?? '—'), bold: header, color: header ? 'FFFFFF' : '000000', size: 18 })],
+      }),
+    ],
+  })
+}
+
+function sourcesTable(sources) {
+  return new Table({
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    rows: [
+      new TableRow({
+        children: [
+          sourceCell('Category', { header: true, widthPct: 22 }),
+          sourceCell('Source URL', { header: true, widthPct: 33 }),
+          sourceCell('Data Used', { header: true, widthPct: 45 }),
+        ],
+      }),
+      ...sources.map(
+        (s) =>
+          new TableRow({
+            children: [
+              sourceCell(s.category, { widthPct: 22 }),
+              sourceCell(s.url, { widthPct: 33 }),
+              sourceCell(s.dataUsed, { widthPct: 45 }),
+            ],
+          })
+      ),
+    ],
+  })
+}
+
 /** Builds and downloads the AlphaHunter equity research memo as a .docx file. */
 export async function generateMemo(data) {
   const summary = buildValuationSummary({
@@ -221,6 +261,12 @@ export async function generateMemo(data) {
 
     heading('9. Investment Thesis & Conclusion'),
     body(n.investmentThesis || 'Not available.'),
+
+    heading('10. References & Sources'),
+    body(
+      'Every figure in this memo traces back to one of the sources below, so every number can be independently verified against the original page it was taken from.'
+    ),
+    ...(data.sources?.length ? [sourcesTable(data.sources)] : [body('Not available for this analysis.')]),
   ]
 
   const doc = new Document({
