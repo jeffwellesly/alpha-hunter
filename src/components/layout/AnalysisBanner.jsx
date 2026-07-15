@@ -7,16 +7,17 @@ export default function AnalysisBanner() {
 
   return (
     <div
+      className="mono"
       style={{
-        background: 'linear-gradient(90deg, rgba(59,167,255,0.1), transparent)',
-        borderBottom: '1px solid var(--border-subtle)',
-        fontSize: 12.5,
-        color: 'var(--text-tertiary)',
-        padding: '7px 24px',
         textAlign: 'center',
+        padding: '9px 0',
+        fontSize: 11.5,
+        color: 'var(--muted-dim)',
+        borderBottom: '1px solid var(--rule)',
       }}
     >
-      Published {data.asOfDate} · Research tool, not investment advice — <Link to="/about" style={{ color: 'var(--text-tertiary)' }}>see About for methodology</Link>
+      Published {data.asOfDate} · Research log, not investment advice — see{' '}
+      <Link to="/about" className="link">About</Link> for methodology
     </div>
   )
 }

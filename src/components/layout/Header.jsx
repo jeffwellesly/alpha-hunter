@@ -26,66 +26,39 @@ export default function Header() {
   }
 
   return (
-    <>
-      <header
-        style={{
-          borderBottom: '1px solid var(--border-subtle)',
-          background: 'rgba(10, 15, 30, 0.85)',
-          backdropFilter: 'blur(10px)',
-          position: 'sticky',
-          top: 0,
-          zIndex: 20,
-        }}
-      >
-        <div
-          style={{
-            maxWidth: 1320,
-            margin: '0 auto',
-            padding: '14px 24px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 24,
-          }}
-        >
+    <header style={{ borderBottom: '1px solid var(--rule)', background: 'rgba(12,15,18,0.9)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 40px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <Link
             to="/"
             onClick={backToList}
-            style={{
-              fontSize: 19,
-              fontWeight: 800,
-              letterSpacing: '-0.02em',
-              background: 'linear-gradient(135deg, #3ba7ff, #2ee6a8)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              textDecoration: 'none',
-              flexShrink: 0,
-            }}
+            className="mono"
+            style={{ fontWeight: 600, fontSize: 13, letterSpacing: '0.12em', display: 'flex', alignItems: 'center', gap: 8, color: 'var(--bone)' }}
           >
-            AlphaHunter
+            <span style={{ width: 7, height: 7, background: 'var(--amber)', display: 'inline-block' }} />
+            ALPHAHUNTER
           </Link>
-
-          <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
-            <strong>{ticker}</strong> {companyData?.companyName ? `— ${companyData.companyName}` : ''}
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginLeft: 'auto' }}>
-            <Link to="/" onClick={backToList} className="btn">
-              ← All Analyses
-            </Link>
-            <button
-              className="btn btn-primary"
-              onClick={handleGenerateMemo}
-              disabled={!memoReady || generatingMemo}
-              title={memoReady ? 'Download a Word memo for this analysis' : 'Needs a peer group + narrative data before it can generate'}
-            >
-              {generatingMemo ? 'Generating…' : 'Download Word Doc'}
-            </button>
+          <div style={{ width: 1, height: 16, background: 'var(--rule)' }} />
+          <div style={{ fontSize: 14, color: 'var(--muted)' }}>
+            <strong style={{ color: 'var(--bone)', fontWeight: 600 }}>{ticker}</strong>
+            {companyData?.companyName ? ` — ${companyData.companyName}` : ''}
           </div>
         </div>
-        {memoError && (
-          <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--accent-red)', paddingBottom: 8 }}>{memoError}</div>
-        )}
-      </header>
-    </>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <Link to="/" onClick={backToList} className="btn">← All Analyses</Link>
+          <button
+            className="btn btn-primary"
+            onClick={handleGenerateMemo}
+            disabled={!memoReady || generatingMemo}
+            title={memoReady ? 'Download a Word memo for this analysis' : 'Needs a peer group + narrative data before it can generate'}
+          >
+            {generatingMemo ? 'Generating…' : 'Download Word Doc'}
+          </button>
+        </div>
+      </div>
+      {memoError && (
+        <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--rose)', paddingBottom: 8 }}>{memoError}</div>
+      )}
+    </header>
   )
 }

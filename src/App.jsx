@@ -8,6 +8,7 @@ import FinancialHealth from './pages/FinancialHealth'
 import ScfQuality from './pages/ScfQuality'
 import AnalystViews from './pages/AnalystViews'
 import About from './pages/About'
+import Analyses from './pages/Analyses'
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         <Routes>
           {/* Standalone - reachable regardless of which analysis (if any) is being viewed, no Header/nav chrome */}
           <Route path="about" element={<About />} />
+          <Route path="analyses" element={<Analyses />} />
           <Route element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="comps" element={<Comps />} />

@@ -33,13 +33,14 @@ export default function InfoBadge({ explainKey, explanation, source, components 
         }}
         style={{
           background: 'none',
-          border: '1px solid var(--border-subtle)',
+          border: '1px solid var(--muted-dim)',
           borderRadius: '50%',
-          width: 15,
-          height: 15,
-          lineHeight: '13px',
+          width: 16,
+          height: 16,
+          lineHeight: '14px',
           cursor: 'pointer',
-          color: 'var(--text-tertiary)',
+          color: 'var(--muted-dim)',
+          fontFamily: 'var(--font-mono)',
           fontSize: 10,
           padding: 0,
         }}

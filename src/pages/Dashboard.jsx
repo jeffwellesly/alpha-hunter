@@ -43,7 +43,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="card">
-        <div className="card-body">Loading live data…</div>
+        <div className="card-body">Loading…</div>
       </div>
     )
   }
@@ -64,7 +64,7 @@ export default function Dashboard() {
             Not enough data yet to compute a verdict
           </div>
           <div className="card-subtitle">
-            The analysis run didn't find enough peer/comps data to aggregate a fair value - re-run Analyze, or check the Comps tab for what came back.
+            The analysis run didn't find enough peer/comps data to aggregate a fair value — check the Comps tab for what came back.
           </div>
         </div>
       </div>
@@ -72,89 +72,79 @@ export default function Dashboard() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      <div className="card">
-        <div className="card-body" style={{ display: 'flex', flexWrap: 'wrap', gap: 32, alignItems: 'center' }}>
-          <div style={{ flex: '1 1 280px' }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 26, fontWeight: 800 }}>{data.ticker}</span>
-              <span style={{ fontSize: 15, color: 'var(--text-secondary)' }}>{data.companyName}</span>
-              <VerdictBadge verdict={summary.verdict} />
-              <InfoBadge explainKey="verdict" />
-            </div>
-            <div style={{ marginTop: 6, fontSize: 13, color: 'var(--text-tertiary)' }}>
-              {data.sector} · {data.industry} · as of {data.asOfDate}
-            </div>
-            <div style={{ marginTop: 18, display: 'flex', gap: 28, flexWrap: 'wrap' }}>
-              <Stat label="Current Price" value={fmtPrice(data.currentPrice)} explainKey="currentPrice" />
-              <Stat label="Mean Fair Value" value={fmtPrice(summary.meanFairValue)} accent="var(--accent-blue)" explainKey="meanFairValue" />
-              <Stat label="Median Fair Value" value={fmtPrice(summary.medianFairValue)} explainKey="medianFairValue" />
-              <Stat
-                label="Upside to Mean"
-                value={fmtPct(summary.upside)}
-                accent={summary.upside > 0 ? 'var(--accent-green)' : 'var(--accent-red)'}
-                explainKey="upside"
-              />
-            </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div className="card" style={{ padding: '32px 36px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 32, flexWrap: 'wrap' }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 8, flexWrap: 'wrap' }}>
+            <span className="mono" style={{ fontWeight: 700, fontSize: 26 }}>{data.ticker}</span>
+            <span style={{ fontFamily: 'var(--font-serif)', fontSize: 19, color: 'var(--bone)' }}>{data.companyName}</span>
+            <VerdictBadge verdict={summary.verdict} size="md" />
+            <InfoBadge explainKey="verdict" />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-            <Gauge score={factorScore.score} />
-            <div className="label">Factor Score<InfoBadge explainKey="factorScore" /></div>
+          <div className="mono" style={{ fontSize: 12, color: 'var(--muted-dim)', marginBottom: 22, textTransform: 'uppercase' }}>
+            {[data.sector, data.industry, `as of ${data.asOfDate}`].filter(Boolean).join(' · ')}
           </div>
+          <div style={{ display: 'flex', gap: 48, flexWrap: 'wrap' }}>
+            <Stat label="Current Price" value={fmtPrice(data.currentPrice)} explainKey="currentPrice" />
+            <Stat label="Mean Fair Value" value={fmtPrice(summary.meanFairValue)} accent="var(--blue)" explainKey="meanFairValue" />
+            <Stat label="Median Fair Value" value={fmtPrice(summary.medianFairValue)} explainKey="medianFairValue" />
+            <Stat
+              label="Upside to Mean"
+              value={fmtPct(summary.upside)}
+              accent={summary.upside > 0 ? 'var(--green)' : 'var(--rose)'}
+              explainKey="upside"
+            />
+          </div>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, minWidth: 170 }}>
+          <Gauge score={factorScore.score} />
+          <div className="label">Factor Score<InfoBadge explainKey="factorScore" /></div>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 20 }}>
-        <div className="card">
-          <div className="card-header">
-            <div>
-              <div className="card-title">Valuation Waterfall</div>
-              <div className="card-subtitle">Current price vs. each valuation method vs. mean fair value</div>
-            </div>
-          </div>
-          <div className="card-body">
-            <PriceWaterfall currentPrice={data.currentPrice} sources={summary.sources} meanFairValue={summary.meanFairValue} />
-            <div style={{ display: 'flex', gap: 20, marginTop: 14, flexWrap: 'wrap' }}>
-              {summary.sources.map((s) => (
-                <div key={s.label} style={{ fontSize: 12.5 }}>
-                  <span style={{ color: 'var(--text-tertiary)' }}>{s.label}: </span>
-                  <span className={`mono ${upsideClass(s.price != null && data.currentPrice ? s.price / data.currentPrice - 1 : null)}`}>
-                    {fmtPrice(s.price)}
-                    {s.label === 'RIM (terminal)' && (
-                      <InfoBadge
-                        explainKey="rimSource"
-                        source={data.sources?.fy1Eps}
-                        components={[
-                          { label: 'FY1/FY2 EPS, LTG', value: 'consensus' },
-                          { label: 'BVPS, payout ratio', value: 'fundamentals' },
-                        ]}
-                      />
-                    )}
-                    {s.label === 'Comps (peer median)' && (
-                      <InfoBadge
-                        explainKey="compsSource"
-                        source={data.sources && { asOfDate: data.asOfDate, links: [] }}
-                        components={data.comps?.peers
-                          ?.filter((p) => typeof p.ntmFwdPe === 'number')
-                          .map((p) => ({ label: p.ticker, value: `${p.ntmFwdPe.toFixed(1)}x` }))}
-                      />
-                    )}
-                    {s.label === 'Analyst consensus' && <InfoBadge explainKey="analystSource" source={data.sources?.analystViews} />}
-                  </span>
-                </div>
-              ))}
-            </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 24 }}>
+        <div className="card" style={{ padding: '28px 30px' }}>
+          <div className="card-title" style={{ marginBottom: 4 }}>Valuation Waterfall</div>
+          <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 28 }}>Current price vs. each valuation method vs. mean fair value</div>
+          <PriceWaterfall currentPrice={data.currentPrice} sources={summary.sources} meanFairValue={summary.meanFairValue} />
+          <div style={{ display: 'flex', gap: 20, marginTop: 18, flexWrap: 'wrap' }}>
+            {summary.sources.map((s) => (
+              <div key={s.label} style={{ fontSize: 12.5 }}>
+                <span style={{ color: 'var(--muted)' }}>{s.label}: </span>
+                <span className={`mono ${upsideClass(s.price != null && data.currentPrice ? s.price / data.currentPrice - 1 : null)}`}>
+                  {fmtPrice(s.price)}
+                  {s.label === 'RIM (terminal)' && (
+                    <InfoBadge
+                      explainKey="rimSource"
+                      source={data.sources?.fy1Eps}
+                      components={[
+                        { label: 'FY1/FY2 EPS, LTG', value: 'consensus' },
+                        { label: 'BVPS, payout ratio', value: 'fundamentals' },
+                      ]}
+                    />
+                  )}
+                  {s.label === 'Comps (peer median)' && (
+                    <InfoBadge
+                      explainKey="compsSource"
+                      source={data.sources && { asOfDate: data.asOfDate, links: [] }}
+                      components={data.comps?.peers
+                        ?.filter((p) => typeof p.ntmFwdPe === 'number')
+                        .map((p) => ({ label: p.ticker, value: `${p.ntmFwdPe.toFixed(1)}x` }))}
+                    />
+                  )}
+                  {s.label === 'Analyst consensus' && <InfoBadge explainKey="analystSource" source={data.sources?.analystViews} />}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="card">
-          <div className="card-header">
-            <div className="card-title">Factor Score Breakdown</div>
-          </div>
-          <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <ProgressBar label="SCF Quality" pct={factorScore.components.scf.pct} color="var(--accent-green)" explainKey="factorScoreScf" />
-            <ProgressBar label="DuPont Health vs. Lee Benchmarks" pct={factorScore.components.dupont.pct} color="var(--accent-blue)" explainKey="factorScoreDupont" />
-            <ProgressBar label="Valuation Discount" pct={factorScore.components.valuation.pct} color="var(--accent-gold)" explainKey="factorScoreValuation" />
+        <div className="card" style={{ padding: '28px 30px' }}>
+          <div className="card-title" style={{ marginBottom: 22 }}>Factor Score Breakdown</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 26 }}>
+            <ProgressBar label="SCF Quality" pct={factorScore.components.scf.pct} color="var(--green)" explainKey="factorScoreScf" />
+            <ProgressBar label="DuPont Health vs. Lee Benchmarks" pct={factorScore.components.dupont.pct} color="var(--blue)" explainKey="factorScoreDupont" />
+            <ProgressBar label="Valuation Discount" pct={factorScore.components.valuation.pct} color="var(--amber)" explainKey="factorScoreValuation" />
           </div>
         </div>
       </div>
@@ -165,8 +155,8 @@ export default function Dashboard() {
 function Stat({ label, value, accent, explainKey }) {
   return (
     <div>
-      <div className="label">{label}{explainKey && <InfoBadge explainKey={explainKey} />}</div>
-      <div className="mono" style={{ fontSize: 20, fontWeight: 700, color: accent || 'var(--text-primary)', marginTop: 2 }}>
+      <div className="label" style={{ marginBottom: 8 }}>{label}{explainKey && <InfoBadge explainKey={explainKey} />}</div>
+      <div style={{ fontFamily: 'var(--font-serif)', fontSize: 23, fontWeight: 500, color: accent || 'var(--bone)' }}>
         {value}
       </div>
     </div>

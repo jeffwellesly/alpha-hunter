@@ -1,148 +1,134 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useApp } from '../../context/AppContext'
-import { DEMO_TICKERS, DEMO_DATA } from '../../data/demo'
-import { listPublicAnalyses, getAnalysis } from '../../lib/analysesApi'
+import { listPublicAnalyses } from '../../lib/analysesApi'
 import { supabaseConfigured } from '../../lib/supabaseClient'
-import { buildValuationSummary } from '../../lib/valuation'
-import VerdictBadge from '../ui/VerdictBadge'
+import { buildLedger } from '../../lib/ledger'
+import Nav from './Nav'
+import Ledger from './Ledger'
 
 export default function Home() {
-  const { viewAnalysis } = useApp()
   const [published, setPublished] = useState([])
-  const [loadingId, setLoadingId] = useState(null)
 
   useEffect(() => {
     if (!supabaseConfigured) return
     listPublicAnalyses().then(setPublished).catch(() => {})
   }, [])
 
-  const demoItems = useMemo(
-    () =>
-      DEMO_TICKERS.map((t) => {
-        const d = DEMO_DATA[t]
-        let verdict = null
-        try {
-          verdict = buildValuationSummary({
-            rimInputs: d.rimInputs,
-            comps: d.comps,
-            analystViews: d.analystViews,
-            currentPrice: d.currentPrice,
-          }).verdict
-        } catch {
-          // leave verdict null if it can't be computed
-        }
-        return { key: `demo-${t}`, ticker: t, companyName: d.companyName, date: d.asOfDate, verdict, kind: 'demo', raw: d }
-      }),
-    []
-  )
-
-  const publishedItems = published.map((row) => ({
-    key: row.id,
-    ticker: row.ticker,
-    companyName: row.company_name,
-    date: row.created_at?.slice(0, 10),
-    verdict: null,
-    kind: 'published',
-    id: row.id,
-  }))
-
-  const items = [...publishedItems, ...demoItems].sort((a, b) => (a.date < b.date ? 1 : -1))
-
-  async function open(item) {
-    if (item.kind === 'demo') {
-      viewAnalysis(item.raw, item.ticker)
-      return
-    }
-    setLoadingId(item.id)
-    try {
-      const full = await getAnalysis(item.id)
-      viewAnalysis(full.results_json, full.ticker)
-    } catch {
-      // stays on the list if this fails
-    } finally {
-      setLoadingId(null)
-    }
-  }
+  const stocks = buildLedger(published)
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        overflowY: 'auto',
-        background: 'var(--bg-base, #05070d)',
-        zIndex: 200,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: '70px 20px 60px',
-      }}
-    >
-      <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.12em', color: 'var(--accent-blue)' }}>ALPHAHUNTER</div>
-      <h1 style={{ fontSize: 36, fontWeight: 800, letterSpacing: '-0.02em', textAlign: 'center', maxWidth: 700, margin: '16px 0 0', lineHeight: 1.2 }}>
-        Stock analysis, published as I do it
-      </h1>
-      <p style={{ fontSize: 15.5, color: 'var(--text-tertiary)', textAlign: 'center', maxWidth: 560, margin: '16px 0 0', lineHeight: 1.55 }}>
-        Every analysis below uses the same residual income valuation, comps, and financial health methodology.{' '}
-        <Link to="/about" style={{ color: 'var(--text-secondary)' }}>Read how it works</Link> —{' '}
-        <strong style={{ color: 'var(--text-secondary)' }}>not investment advice.</strong>
-      </p>
+    <div style={pageStyle}>
+      <Nav active="home" />
+      <main style={mainStyle}>
+        <div style={{ padding: '96px 0 56px', borderBottom: '1px solid var(--rule)' }}>
+          <div style={eyebrowStyle}>Research log · not investment advice</div>
+          <h1 style={headlineStyle}>
+            Equity research, <em style={{ fontStyle: 'italic', color: 'var(--amber)', fontWeight: 300 }}>published</em> as I build it.
+          </h1>
+          <p style={subStyle}>
+            Every write-up here runs the same fixed process —{' '}
+            <b style={{ color: 'var(--bone)', fontWeight: 500 }}>
+              comps, residual income valuation, DuPont decomposition, cash-flow quality, and analyst sentiment
+            </b>{' '}
+            — so nothing is fitted to the stock after the fact. Read the method once, then read every ticker the same way.
+          </p>
+          <div style={{ display: 'flex', gap: 14, marginBottom: 8 }}>
+            <Link to="/analyses" className="btn btn-primary">See latest analyses →</Link>
+            <Link to="/about" className="btn">Read how it works</Link>
+          </div>
 
-      <div style={{ width: '100%', maxWidth: 760, marginTop: 44 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-tertiary)', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-          Analyses
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {items.map((item) => (
-            <button
-              key={item.key}
-              className="card"
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '16px 20px',
-                textAlign: 'left',
-                cursor: 'pointer',
-                border: 'none',
-                width: '100%',
-              }}
-              onClick={() => open(item)}
-              disabled={loadingId === item.id}
-            >
-              <div>
-                <div style={{ fontWeight: 700, fontSize: 15 }}>
-                  {item.ticker} <span style={{ fontWeight: 400, color: 'var(--text-tertiary)' }}>— {item.companyName}</span>
-                </div>
-                <div style={{ fontSize: 11.5, color: 'var(--text-disabled)', marginTop: 2 }}>
-                  {loadingId === item.id ? 'Loading…' : `Published ${item.date}`}
-                </div>
+          <div style={{ display: 'flex', marginTop: 64, borderTop: '1px solid var(--rule)' }}>
+            {[
+              ['01', 'Comps'],
+              ['02', 'RIM'],
+              ['03', 'DuPont'],
+              ['04', 'SCF Quality'],
+              ['05', 'Analyst Views'],
+            ].map(([num, name], i, arr) => (
+              <div key={num} style={{ flex: 1, padding: '20px 20px 0', borderRight: i < arr.length - 1 ? '1px solid var(--rule)' : 'none' }}>
+                <div className="mono" style={{ fontSize: 12, color: 'var(--muted-dim)' }}>{num}</div>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: 16, marginTop: 6, color: 'var(--bone)' }}>{name}</div>
               </div>
-              {item.verdict && <VerdictBadge verdict={item.verdict} />}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div style={{ width: '100%', maxWidth: 760, marginTop: 40 }}>
-        <div
-          className="card"
-          style={{ padding: '18px 20px', opacity: 0.6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-        >
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 14 }}>Want an analysis of your own stock?</div>
-            <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 2 }}>Self-serve analysis — coming soon.</div>
+            ))}
           </div>
         </div>
-      </div>
 
-      <div style={{ marginTop: 50, fontSize: 11.5, color: 'var(--text-disabled)', textAlign: 'center', maxWidth: 560, lineHeight: 1.6 }}>
-        AlphaHunter applies established equity-valuation methodology (Alphanomics / residual income model) to publicly
-        available information researched by AI. It is a research tool, not investment advice — see{' '}
-        <Link to="/about" style={{ color: 'var(--text-tertiary)' }}>About</Link> for the full risk disclosure. Investing carries
-        risk; decisions and outcomes are your own.
-      </div>
+        <div style={{ padding: '56px 0 72px' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 24 }}>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontWeight: 500, fontSize: 22 }}>Latest analyses</h2>
+            <Link to="/analyses" className="mono" style={{ fontSize: 12, color: 'var(--muted)', letterSpacing: '0.04em' }}>
+              VIEW ALL →
+            </Link>
+          </div>
+          <Ledger stocks={stocks} limit={2} />
+        </div>
+
+        <div
+          style={{
+            margin: '56px 0 96px',
+            border: '1px dashed var(--rule)',
+            borderRadius: 4,
+            padding: 36,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 24,
+            flexWrap: 'wrap',
+          }}
+        >
+          <div>
+            <h3 style={{ fontFamily: 'var(--font-serif)', fontWeight: 500, fontSize: 19, marginBottom: 8 }}>Analyze a stock of your own</h3>
+            <p style={{ color: 'var(--muted)', fontSize: 14, maxWidth: '46ch', margin: 0 }}>
+              Run the same comps + RIM + DuPont process on any ticker you pick, using the exact logic used here.
+            </p>
+          </div>
+          <div className="mono" style={{ fontSize: 11, letterSpacing: '0.1em', color: 'var(--ink)', background: 'var(--amber)', padding: '6px 12px', borderRadius: 20, whiteSpace: 'nowrap', fontWeight: 600 }}>
+            COMING SOON
+          </div>
+        </div>
+
+        <footer style={{ borderTop: '1px solid var(--rule)', padding: '32px 0 64px', fontSize: 12.5, color: 'var(--muted-dim)', maxWidth: '70ch', lineHeight: 1.7 }}>
+          AlphaHunter applies a fixed equity-valuation methodology (residual income model, peer comps, DuPont, and
+          cash-flow quality checks, based on the Alphanomics framework) to publicly available data, researched with AI
+          assistance. <b style={{ color: 'var(--muted)' }}>It is a research log, not investment advice</b> — see{' '}
+          <Link to="/about" className="link">About</Link> for the full method and disclosure. Investing carries risk;
+          decisions and outcomes are your own.
+        </footer>
+      </main>
     </div>
   )
 }
+
+const pageStyle = {
+  position: 'fixed',
+  inset: 0,
+  overflowY: 'auto',
+  background: 'var(--ink)',
+  zIndex: 200,
+  backgroundImage: 'linear-gradient(var(--rule) 1px, transparent 1px)',
+  backgroundSize: '100% 88px',
+  backgroundPosition: '0 140px',
+}
+
+const mainStyle = { maxWidth: 920, margin: '0 auto', padding: '0 48px' }
+
+const eyebrowStyle = {
+  fontFamily: 'var(--font-mono)',
+  fontSize: 12,
+  letterSpacing: '0.16em',
+  color: 'var(--amber)',
+  textTransform: 'uppercase',
+  marginBottom: 22,
+}
+
+const headlineStyle = {
+  fontFamily: 'var(--font-serif)',
+  fontWeight: 500,
+  fontSize: 56,
+  lineHeight: 1.08,
+  letterSpacing: '-0.01em',
+  maxWidth: '11.5ch',
+  marginBottom: 26,
+}
+
+const subStyle = { fontSize: 17, color: 'var(--muted)', maxWidth: '52ch', marginBottom: 36, lineHeight: 1.55 }
