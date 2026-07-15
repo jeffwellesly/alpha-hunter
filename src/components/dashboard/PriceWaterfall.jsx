@@ -1,4 +1,5 @@
-import { fmtCompactUsd } from '../../lib/format'
+import { useState } from 'react'
+import { fmtCompactUsd, fmtPrice } from '../../lib/format'
 
 const COLORS = {
   current: 'var(--muted-dim)',
@@ -15,6 +16,8 @@ function niceMax(value) {
 }
 
 export default function PriceWaterfall({ currentPrice, sources, meanFairValue }) {
+  const [hovered, setHovered] = useState(null)
+
   const bars = [
     { label: 'Current Price', value: currentPrice, key: 'current' },
     ...sources.map((s) => ({
@@ -29,7 +32,14 @@ export default function PriceWaterfall({ currentPrice, sources, meanFairValue })
   const steps = [max, max * 0.75, max * 0.5, max * 0.25, 0]
 
   return (
-    <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+    // Setting overflowX here implicitly forces overflowY to 'auto' too (a
+    // box can't clip one axis and stay open on the other per the CSS
+    // overflow spec) - which was silently clipping the hover tooltips
+    // popping up above each bar, even though they had correct geometry and
+    // colors. paddingTop gives them room to render within this container's
+    // own padding box (overflow clips at the padding edge, not the content
+    // edge) instead of escaping it.
+    <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingTop: 36 }}>
       <div style={{ display: 'flex', alignItems: 'flex-end', gap: 24, height: 260, borderBottom: '1px solid var(--rule)', position: 'relative', paddingLeft: 56, minWidth: 380 }}>
         <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }} className="mono">
           {steps.map((s) => (
@@ -39,7 +49,36 @@ export default function PriceWaterfall({ currentPrice, sources, meanFairValue })
         <div style={{ display: 'flex', alignItems: 'flex-end', gap: 22, flex: 1, height: '100%' }}>
           {bars.map((b) => (
             <div key={b.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, flex: 1, height: '100%', justifyContent: 'flex-end' }}>
-              <div style={{ width: '100%', height: `${(b.value / max) * 100}%`, background: COLORS[b.key], borderRadius: '3px 3px 0 0' }} />
+              <div
+                onMouseEnter={() => setHovered(b.label)}
+                onMouseLeave={() => setHovered((h) => (h === b.label ? null : h))}
+                style={{ position: 'relative', width: '100%', height: `${(b.value / max) * 100}%`, background: COLORS[b.key], borderRadius: '3px 3px 0 0', cursor: 'default' }}
+              >
+                {hovered === b.label && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      bottom: '100%',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      marginBottom: 6,
+                      background: 'var(--bg-inset)',
+                      border: '1px solid var(--border-subtle)',
+                      borderRadius: 6,
+                      padding: '4px 9px',
+                      whiteSpace: 'nowrap',
+                      fontSize: 12,
+                      fontFamily: 'var(--font-mono)',
+                      color: 'var(--text-primary)',
+                      boxShadow: '0 4px 14px rgba(0,0,0,0.4)',
+                      zIndex: 10,
+                      pointerEvents: 'none',
+                    }}
+                  >
+                    {fmtPrice(b.value)}
+                  </div>
+                )}
+              </div>
               {/* Fixed height, not auto-sized to text - every bar's label
                   occupies exactly the same vertical space (up to 2 wrapped
                   lines) regardless of word count, so every bar's baseline
