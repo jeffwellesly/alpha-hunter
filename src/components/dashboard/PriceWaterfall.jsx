@@ -22,7 +22,7 @@ export default function PriceWaterfall({ currentPrice, sources, meanFairValue })
       value: s.price,
       key: s.label.startsWith('RIM') ? 'rim' : s.label.startsWith('Comps') ? 'comps' : 'analyst',
     })),
-    { label: 'Mean Fair Value', value: meanFairValue, key: 'mean' },
+    { label: 'Fair Value', value: meanFairValue, key: 'mean' },
   ].filter((d) => d.value != null)
 
   const max = niceMax(Math.max(...bars.map((b) => b.value)) * 1.05)
@@ -40,8 +40,16 @@ export default function PriceWaterfall({ currentPrice, sources, meanFairValue })
           {bars.map((b) => (
             <div key={b.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, flex: 1, height: '100%', justifyContent: 'flex-end' }}>
               <div style={{ width: '100%', height: `${(b.value / max) * 100}%`, background: COLORS[b.key], borderRadius: '3px 3px 0 0' }} />
-              <div style={{ fontSize: 11, color: 'var(--muted)', textAlign: 'center', lineHeight: 1.3 }}>
-                {b.label.split(' ').map((w, i) => <span key={i}>{w}<br /></span>)}
+              {/* Fixed height, not auto-sized to text - every bar's label
+                  occupies exactly the same vertical space (up to 2 wrapped
+                  lines) regardless of word count, so every bar's baseline
+                  lines up. A label that used to force one word per line via
+                  split(' ') made 3-word labels one line taller than 2-word
+                  ones, which (with justifyContent: flex-end packing bar+
+                  label as a unit) shoved that bar's whole block upward -
+                  visually "starting above" bars whose labels were shorter. */}
+              <div style={{ width: '100%', height: 29, fontSize: 11, color: 'var(--muted)', textAlign: 'center', lineHeight: 1.3, overflow: 'hidden' }}>
+                {b.label}
               </div>
             </div>
           ))}
