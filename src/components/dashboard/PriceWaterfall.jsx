@@ -5,7 +5,7 @@ const COLORS = {
   rim: 'var(--amber)',
   comps: 'var(--blue)',
   analyst: 'var(--green)',
-  fair: 'var(--blue)',
+  mean: 'var(--blue)',
 }
 
 function niceMax(value) {
@@ -14,7 +14,7 @@ function niceMax(value) {
   return Math.ceil(value / magnitude) * magnitude
 }
 
-export default function PriceWaterfall({ currentPrice, sources, fairValue, fairValueLabel = 'Fair Value' }) {
+export default function PriceWaterfall({ currentPrice, sources, meanFairValue }) {
   const bars = [
     { label: 'Current Price', value: currentPrice, key: 'current' },
     ...sources.map((s) => ({
@@ -22,7 +22,7 @@ export default function PriceWaterfall({ currentPrice, sources, fairValue, fairV
       value: s.price,
       key: s.label.startsWith('RIM') ? 'rim' : s.label.startsWith('Comps') ? 'comps' : 'analyst',
     })),
-    { label: fairValueLabel, value: fairValue, key: 'fair' },
+    { label: 'Mean Fair Value', value: meanFairValue, key: 'mean' },
   ].filter((d) => d.value != null)
 
   const max = niceMax(Math.max(...bars.map((b) => b.value)) * 1.05)

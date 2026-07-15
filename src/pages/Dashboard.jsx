@@ -105,13 +105,13 @@ export default function Dashboard() {
       <div className="ah-dashboard-grid" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 24 }}>
         <div className="card" style={{ padding: '28px 30px' }}>
           <div className="card-title" style={{ marginBottom: 4 }}>Valuation Waterfall</div>
-          <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: summary.rim.reliable ? 28 : 8 }}>Current price vs. each valuation method vs. median fair value</div>
+          <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: summary.rim.reliable ? 28 : 8 }}>Current price vs. each valuation method vs. mean fair value</div>
           {!summary.rim.reliable && (
             <div style={{ fontSize: 12.5, color: 'var(--amber)', marginBottom: 20, lineHeight: 1.5 }}>
               RIM analysis is unreliable for this name (implied price came out negative - {fmtPrice(summary.rim.terminalPrice)}, usually a sign book value per share is unusually thin relative to EPS) and has been excluded. Fair value below reflects Comps + Analyst Consensus only.
             </div>
           )}
-          <PriceWaterfall currentPrice={data.currentPrice} sources={summary.sources} fairValue={summary.medianFairValue} fairValueLabel="Median Fair Value" />
+          <PriceWaterfall currentPrice={data.currentPrice} sources={summary.sources} meanFairValue={summary.meanFairValue} />
           <div style={{ display: 'flex', gap: 20, marginTop: 18, flexWrap: 'wrap' }}>
             {summary.sources.map((s) => (
               <div key={s.label} style={{ fontSize: 12.5 }}>
