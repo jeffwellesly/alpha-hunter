@@ -43,7 +43,7 @@ export default function FinancialHealth() {
         <div className="card-header">
           <div>
             <div className="card-title">Multi-Year Financial Metrics</div>
-            <div className="card-subtitle">{data.ticker} — historical + estimates</div>
+            <div className="card-subtitle">{data.ticker}: historical + estimates</div>
           </div>
         </div>
         <div className="card-body" style={{ overflowX: 'auto' }}>
@@ -61,7 +61,7 @@ export default function FinancialHealth() {
                 <tr key={row.key}>
                   <td>{row.label}</td>
                   {data.financials.map((f) => (
-                    <td key={f.year}>{f[row.key] != null ? row.fmt(f[row.key]) : '—'}</td>
+                    <td key={f.year}>{f[row.key] != null ? row.fmt(f[row.key]) : '-'}</td>
                   ))}
                 </tr>
               ))}
@@ -95,8 +95,8 @@ export default function FinancialHealth() {
                   <tr key={row.year}>
                     <td>{row.year}</td>
                     <td>{fmtPct(row.netMargin)}</td>
-                    <td>{row.assetTurnover != null ? row.assetTurnover.toFixed(2) + 'x' : '—'}</td>
-                    <td>{row.financialLeverage != null ? row.financialLeverage.toFixed(2) + 'x' : '—'}</td>
+                    <td>{row.assetTurnover != null ? row.assetTurnover.toFixed(2) + 'x' : '-'}</td>
+                    <td>{row.financialLeverage != null ? row.financialLeverage.toFixed(2) + 'x' : '-'}</td>
                     <td>{fmtPct(row.roeFromComponents ?? row.roe)}</td>
                   </tr>
                 ))}

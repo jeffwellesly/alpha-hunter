@@ -73,7 +73,7 @@ export default function Rim() {
           <div className="card-header">
             <div>
               <div className="card-title">RIM.512 Inputs</div>
-              <div className="card-subtitle">All fields editable — overridden values highlighted in gold</div>
+              <div className="card-subtitle">All fields editable, overridden values highlighted in gold</div>
             </div>
           </div>
           <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -120,7 +120,7 @@ export default function Rim() {
               <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4 }}>
                 {targetRoeMode === 'solved'
                   ? `Solved so terminal implied EPS growth = ${(TERMINAL_EPS_GROWTH_TARGET * 100).toFixed(1)}% (${solved?.iterations ?? 0} iterations)`
-                  : `Manual override — terminal implied EPS growth = ${rimResult ? fmtPct(rimResult.terminalImpliedEpsGrowth) : '—'}`}
+                  : `Manual override: terminal implied EPS growth = ${rimResult ? fmtPct(rimResult.terminalImpliedEpsGrowth) : '-'}`}
               </div>
             </div>
           </div>
@@ -131,7 +131,7 @@ export default function Rim() {
             <div className="card-header">
               <div>
                 <div className="card-title">Implied Price by Forecasting Horizon</div>
-                <div className="card-subtitle">RIM.512 — 5 years explicit EPS growth, 12-year total forecasting horizon</div>
+                <div className="card-subtitle">RIM.512: 5 years explicit EPS growth, 12-year total forecasting horizon</div>
               </div>
             </div>
             <div className="card-body" style={{ overflowX: 'auto' }}>

@@ -6,7 +6,7 @@ const SIZES = {
 
 export default function VerdictBadge({ verdict, size = 'md' }) {
   const { fontSize, padding } = SIZES[size] || SIZES.md
-  if (!verdict) return <span className="badge" style={{ background: 'var(--paper-raised)', color: 'var(--muted)', fontSize, padding }}>—</span>
+  if (!verdict) return <span className="badge" style={{ background: 'var(--paper-raised)', color: 'var(--muted)', fontSize, padding }}>-</span>
   const cls = verdict === 'Buy' ? 'badge-buy' : verdict === 'Sell' ? 'badge-sell' : 'badge-hold'
   return (
     <span className={`badge ${cls}`} style={{ fontSize, padding }}>

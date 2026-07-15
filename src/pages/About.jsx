@@ -106,7 +106,7 @@ export default function About() {
           <p style={{ color: 'var(--muted)', fontSize: 14, lineHeight: 1.7, margin: 0 }}>
             The Buy / Hold / Sell label reflects where a stock's blended fair value sits relative to its current
             price, using a ±15% band around the average of the methods above. This is a personal research log
-            applying a course-based valuation framework with AI assistance — it is not investment advice, and it is
+            applying a course-based valuation framework with AI assistance. It is not investment advice, and it is
             not a recommendation to buy or sell anything. Do your own work before making any financial decision.
           </p>
         </div>

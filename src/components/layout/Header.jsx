@@ -53,7 +53,7 @@ export default function Header() {
           <div style={{ width: 1, height: 16, background: 'var(--rule)' }} />
           <div style={{ fontSize: 14, color: 'var(--muted)' }}>
             <strong style={{ color: 'var(--bone)', fontWeight: 600 }}>{ticker}</strong>
-            {companyData?.companyName ? ` — ${companyData.companyName}` : ''}
+            {companyData?.companyName ? ` · ${companyData.companyName}` : ''}
           </div>
         </div>
         <div className="ah-topbar-right" style={{ display: 'flex', gap: 10 }}>

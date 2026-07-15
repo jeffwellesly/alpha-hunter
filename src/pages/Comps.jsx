@@ -32,7 +32,7 @@ export default function Comps() {
           <div className="card-body">
             <div className="card-title" style={{ marginBottom: 8 }}>No peer group yet</div>
             <div className="card-subtitle">
-              The analysis run didn't find a usable peer group for this ticker — re-run Analyze from the header.
+              The analysis run didn't find a usable peer group for this ticker. Re-run Analyze from the header.
             </div>
           </div>
         </div>
@@ -41,7 +41,7 @@ export default function Comps() {
           <div className="card-header">
             <div>
               <div className="card-title">Comparable Company Analysis</div>
-              <div className="card-subtitle">{data.ticker} vs. {data.comps.peers.length} peers — trading multiples as of {data.asOfDate}</div>
+              <div className="card-subtitle">{data.ticker} vs. {data.comps.peers.length} peers, trading multiples as of {data.asOfDate}</div>
             </div>
             <div style={{ textAlign: 'right' }}>
               <div className="label">Comps-Implied Price<InfoBadge explainKey="compsSource" /></div>
@@ -77,7 +77,7 @@ export default function Comps() {
 
                 <tr className="row-highlight">
                   <td>
-                    {data.companyName} ({data.ticker}) — Target
+                    {data.companyName} ({data.ticker}), Target
                     <InfoBadge source={data.sources?.targetMetrics} />
                   </td>
                   {METRIC_KEYS.map((k) => (

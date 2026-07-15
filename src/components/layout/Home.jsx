@@ -23,10 +23,10 @@ export default function Home() {
         <div style={{ padding: '96px 0 56px', borderBottom: '1px solid var(--rule)' }}>
           <div style={eyebrowStyle}>Research log · not investment advice</div>
           <h1 className="ah-hero-headline" style={headlineStyle}>
-            How I actually value a stock — <em style={{ fontStyle: 'italic', color: 'var(--amber)', fontWeight: 300 }}>published</em> as I go.
+            How I actually value a stock, <em style={{ fontStyle: 'italic', color: 'var(--amber)', fontWeight: 300 }}>published</em> as I go.
           </h1>
           <p style={subStyle}>
-            Every write-up here follows the same five-step process —{' '}
+            Every write-up here follows the same five-step process:{' '}
             <b style={{ color: 'var(--bone)', fontWeight: 500 }}>
               peer trading multiples, residual income valuation, DuPont, cash-flow quality, analyst sentiment
             </b>
@@ -91,7 +91,7 @@ export default function Home() {
         <footer style={{ borderTop: '1px solid var(--rule)', padding: '32px 0 64px', fontSize: 12.5, color: 'var(--muted-dim)', maxWidth: '70ch', lineHeight: 1.7 }}>
           AlphaHunter applies a fixed equity-valuation methodology (residual income model, peer trading multiples, DuPont, and
           cash-flow quality checks) to publicly available data, researched with AI
-          assistance. <b style={{ color: 'var(--muted)' }}>It is a research log, not investment advice</b> — see{' '}
+          assistance. <b style={{ color: 'var(--muted)' }}>It is a research log, not investment advice.</b> See{' '}
           <Link to="/about" className="link">About</Link> for the full method and disclosure. Investing carries risk;
           decisions and outcomes are your own.
         </footer>

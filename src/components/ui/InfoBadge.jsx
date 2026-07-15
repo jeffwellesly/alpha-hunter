@@ -96,7 +96,7 @@ export default function InfoBadge({ explainKey, explanation, source, components 
                     ))}
                   </div>
                 ) : (
-                  <div style={{ color: 'var(--text-tertiary)' }}>Claude web search — no specific source URL captured for this figure.</div>
+                  <div style={{ color: 'var(--text-tertiary)' }}>Claude web search: no specific source URL captured for this figure.</div>
                 )}
               </div>
             )}

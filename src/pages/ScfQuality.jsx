@@ -30,7 +30,7 @@ export default function ScfQuality() {
         <div className="card-header">
           <div>
             <div className="card-title">Statement of Cash Flows Quality</div>
-            <div className="card-subtitle">{data.ticker} — 6-point checklist computed from cash flow statement data</div>
+            <div className="card-subtitle">{data.ticker}: 6-point checklist computed from cash flow statement data</div>
           </div>
           {score && (
             <div style={{ textAlign: 'right' }}>

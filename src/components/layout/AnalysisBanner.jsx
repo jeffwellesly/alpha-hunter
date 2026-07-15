@@ -16,7 +16,7 @@ export default function AnalysisBanner() {
         borderBottom: '1px solid var(--rule)',
       }}
     >
-      Published {data.asOfDate} · Research log, not investment advice — see{' '}
+      Published {data.asOfDate} · Research log, not investment advice. See{' '}
       <Link to="/about" className="link">About</Link> for methodology
     </div>
   )

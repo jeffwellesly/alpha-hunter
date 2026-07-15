@@ -64,7 +64,7 @@ export default function Dashboard() {
             Not enough data yet to compute a verdict
           </div>
           <div className="card-subtitle">
-            The analysis run didn't find enough peer/comps data to aggregate a fair value — check the Comps tab for what came back.
+            The analysis run didn't find enough peer/comps data to aggregate a fair value. Check the Comps tab for what came back.
           </div>
         </div>
       </div>

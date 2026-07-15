@@ -34,7 +34,7 @@ function disclaimerBlock() {
       bottom: { style: BorderStyle.SINGLE, size: 6, color: WARNING, space: 6 },
     },
     children: [
-      new TextRun({ text: 'DISCLAIMER — NOT INVESTMENT ADVICE: ', bold: true, size: 19, color: WARNING }),
+      new TextRun({ text: 'DISCLAIMER (NOT INVESTMENT ADVICE): ', bold: true, size: 19, color: WARNING }),
       new TextRun({ text: DISCLAIMER_TEXT, size: 19 }),
     ],
   })
@@ -79,7 +79,7 @@ function cell(text, { header = false, align = AlignmentType.RIGHT } = {}) {
     children: [
       new Paragraph({
         alignment: align,
-        children: [new TextRun({ text: String(text ?? '—'), bold: header, color: header ? 'FFFFFF' : '000000', size: 19 })],
+        children: [new TextRun({ text: String(text ?? '-'), bold: header, color: header ? 'FFFFFF' : '000000', size: 19 })],
       }),
     ],
   })
@@ -106,7 +106,7 @@ function sourceCell(text, { header = false, widthPct } = {}) {
     children: [
       new Paragraph({
         alignment: AlignmentType.LEFT,
-        children: [new TextRun({ text: String(text ?? '—'), bold: header, color: header ? 'FFFFFF' : '000000', size: 18 })],
+        children: [new TextRun({ text: String(text ?? '-'), bold: header, color: header ? 'FFFFFF' : '000000', size: 18 })],
       }),
     ],
   })
@@ -155,14 +155,14 @@ export async function generateMemo(data) {
     new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'MEMORANDUM', bold: true, size: 32 })] }),
     new Paragraph({
       spacing: { before: 200 },
-      children: [new TextRun({ text: `RE: ${data.companyName} (${data.ticker}) — Complete Stock Analysis`, bold: true, size: 22 })],
+      children: [new TextRun({ text: `RE: ${data.companyName} (${data.ticker}): Complete Stock Analysis`, bold: true, size: 22 })],
     }),
     body(`DATE: ${data.asOfDate}`),
     new Paragraph({
       spacing: { before: 100, after: 200 },
       children: [
         new TextRun({ text: 'RECOMMENDATION: ', bold: true, size: 24 }),
-        new TextRun({ text: `${summary.verdict?.toUpperCase() ?? '—'}`, bold: true, size: 24, color: ACCENT }),
+        new TextRun({ text: `${summary.verdict?.toUpperCase() ?? '-'}`, bold: true, size: 24, color: ACCENT }),
         new TextRun({ text: `  |  Fair Value Range: ${fmtPrice(fairLow)}–${fmtPrice(fairHigh)}  |  Current Price: ${fmtPrice(data.currentPrice)}`, size: 24 }),
       ],
     }),
@@ -269,7 +269,7 @@ export async function generateMemo(data) {
       [
         ...summary.sources.map((s) => [s.label, fmtPrice(s.price), fmtPct(data.currentPrice && s.price ? s.price / data.currentPrice - 1 : null)]),
         ['Mean Fair Value', fmtPrice(summary.meanFairValue), fmtPct(summary.upside)],
-        ['Fair Value Range', `${fmtPrice(fairLow)}–${fmtPrice(fairHigh)}`, '—'],
+        ['Fair Value Range', `${fmtPrice(fairLow)}–${fmtPrice(fairHigh)}`, '-'],
       ]
     ),
 
@@ -302,7 +302,7 @@ export async function generateMemo(data) {
                 alignment: AlignmentType.CENTER,
                 children: [
                   new TextRun({
-                    text: 'Not investment advice — a personal research log, not a recommendation to buy, hold, or sell any security.',
+                    text: 'Not investment advice: a personal research log, not a recommendation to buy, hold, or sell any security.',
                     size: 15,
                     color: '888888',
                     italics: true,
