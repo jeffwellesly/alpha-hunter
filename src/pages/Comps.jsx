@@ -44,7 +44,7 @@ export default function Comps() {
               <div className="card-subtitle">{data.ticker} vs. {data.comps.peers.length} peers, trading multiples as of {data.asOfDate}</div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div className="label">Comps-Implied Price<InfoBadge explainKey="compsSource" /></div>
+              <div className="label">P/E-Implied Price (NTM Fwd P/E)<InfoBadge explainKey="compsSource" /></div>
               <div className={`mono ${upsideClass(upside)}`} style={{ fontSize: 20, fontWeight: 700 }}>
                 {fmtPrice(impliedPrice)}
                 {upside != null && <span style={{ fontSize: 13, marginLeft: 8 }}>({fmtPct(upside)})</span>}

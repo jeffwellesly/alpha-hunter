@@ -10,7 +10,7 @@ A stock equity-valuation web app that turns a business-school valuation methodol
 
 AlphaHunter analyzes a public company and produces a Buy/Hold/Sell verdict backed by real analysis: a Residual Income Model valuation, comparable-company analysis, DuPont decomposition, statement-of-cash-flows quality scoring, and AI-researched analyst consensus — all in one dashboard, exportable as a Word equity research memo.
 
-Demo mode ships two fully pre-analyzed tickers (**MU**, **LLY**) with real, researched data. Live mode lets you bring your own free [Financial Modeling Prep](https://financialmodelingprep.com/) key (+ optional [Anthropic](https://console.anthropic.com/) key) to analyze any ticker.
+Demo mode ships two fully pre-analyzed tickers (**MU**, **LLY**) with real, researched data. Live mode lets you bring your own [Anthropic](https://console.anthropic.com/) key to analyze any ticker.
 
 ## Why I built this
 
@@ -18,9 +18,9 @@ To implement the Alphanomics methodology I learned in ACCTG 579 (Charles M.C. Le
 
 ## Tech stack
 
-React + Vite, deployed to Vercel as a fully static site (no backend server), [Financial Modeling Prep](https://financialmodelingprep.com/) API for hard financials (income statement, balance sheet, cash flow, comps multiples), [Anthropic API](https://www.anthropic.com/api) with web search for analyst consensus, fiscal-calendar lookups, and narrative generation, `docx` for one-click Word memo export.
+React + Vite, deployed to Vercel as a fully static site (no backend server). [Anthropic API](https://www.anthropic.com/api) with web search is the sole data source — every number on every tab (financials, cash flow, comps multiples, peer selection, analyst consensus, fiscal calendar) is reconstructed via Claude web search, not pulled from a structured financials API. `docx` for one-click Word memo export.
 
-API keys are entered by the user, stored only in browser `localStorage`, and sent directly from the browser to FMP/Anthropic — there is no server in between and nothing is ever stored or logged anywhere else.
+The API key is entered by the user, stored only in browser `localStorage`, and sent directly from the browser to Anthropic — there is no server in between and nothing is ever stored or logged anywhere else.
 
 ## How to run locally
 
@@ -34,7 +34,7 @@ No `.env` file needed — Demo mode works out of the box; Live mode prompts for 
 ## What I learned
 
 - How to reverse-engineer and formula-verify a financial model (the Alphanomics RIM.512 residual income model) cell-for-cell against real Excel workbooks, including writing a numerical bisection solver for the equilibrium Target ROE input that a spreadsheet would normally goal-seek by hand — see `src/lib/rim.js`
-- How to combine a traditional financial-data API with an LLM as a genuine research step (not just a chatbot bolted on), and how to keep that reliable enough to put a verdict behind
+- How to use an LLM as a genuine research step, not just a chatbot bolted on top of real data — and the reliability trade-offs of that vs. a structured financials API (web-search-reconstructed statements can be internally inconsistent, which is why every figure needs a visible source citation)
 - How to design a fully client-side app (no backend) that still handles user-supplied API keys responsibly
 - How to use Git and GitHub to track a project's history and iterate in small, reviewable commits
 - How to work with Claude Code as a building partner — describing what I want, reviewing what it changes, and catching issues before they ship

@@ -16,7 +16,7 @@ export const EXPLANATIONS = {
   factorScoreValuation: 'Upside/downside to Mean Fair Value, mapped so 0% upside = 50% and the full ±30% range spans 0-100%.',
   verdict: 'Buy if upside > +15%, Sell if upside < −15%, otherwise Hold.',
   rimSource: 'The RIM tab’s 12-year terminal implied price (see RIM Valuation tab).',
-  compsSource: 'Peer group’s median NTM forward P/E × this company’s FY1 EPS.',
+  compsSource: 'Based on peer median NTM Forward P/E applied to FY1 consensus EPS. Other multiples shown below are for reference/discount comparison only.',
   analystSource: 'Average of analyst consensus mean and median 12-month price targets.',
 
   // RIM inputs
