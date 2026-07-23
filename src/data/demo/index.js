@@ -4,8 +4,9 @@ import { sndkDemo } from './sndk'
 import { wdcDemo } from './wdc'
 import { costDemo } from './cost'
 import { lrcxDemo } from './lrcx'
+import { nvdaDemo } from './nvda'
 
-export const DEMO_TICKERS = ['MU', 'LLY', 'SNDK', 'WDC', 'COST', 'LRCX']
+export const DEMO_TICKERS = ['MU', 'LLY', 'SNDK', 'WDC', 'COST', 'LRCX', 'NVDA']
 
 export const DEMO_DATA = {
   MU: muDemo,
@@ -14,6 +15,7 @@ export const DEMO_DATA = {
   WDC: wdcDemo,
   COST: costDemo,
   LRCX: lrcxDemo,
+  NVDA: nvdaDemo,
 }
 
 export function getDemoData(ticker) {
