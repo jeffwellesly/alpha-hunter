@@ -7,8 +7,9 @@ import { lrcxDemo } from './lrcx'
 import { nvdaDemo } from './nvda'
 import { amdDemo } from './amd'
 import { msftDemo } from './msft'
+import { vktxDemo } from './vktx'
 
-export const DEMO_TICKERS = ['MU', 'LLY', 'SNDK', 'WDC', 'COST', 'LRCX', 'NVDA', 'AMD', 'MSFT']
+export const DEMO_TICKERS = ['MU', 'LLY', 'SNDK', 'WDC', 'COST', 'LRCX', 'NVDA', 'AMD', 'MSFT', 'VKTX']
 
 export const DEMO_DATA = {
   MU: muDemo,
@@ -20,6 +21,7 @@ export const DEMO_DATA = {
   NVDA: nvdaDemo,
   AMD: amdDemo,
   MSFT: msftDemo,
+  VKTX: vktxDemo,
 }
 
 export function getDemoData(ticker) {
